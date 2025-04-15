@@ -1,0 +1,74 @@
+name: CI/CD for Kafka Showcase
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+permissions:
+  packages: write
+  contents: read
+
+env:
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_TAG: ${{ github.ref_name }}-latest
+  BRANCH_TAG: ${{ github.ref_name }}-latest
+  DOCKER_APPS_PATH: apps
+  HELM_CHARTS_PATH: charts
+
+jobs:
+  docker-build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build & Push All App Images
+        run: |
+          for dir in showcase/solar-system/${{ env.DOCKER_APPS_PATH }}/*; do
+            name=$(basename "$dir")
+            base=${{ env.REGISTRY }}/puzzle-${name}
+            docker build -t "$base:${{ env.IMAGE_TAG }}" -t "$base:${{ env.BRANCH_TAG }}" -t "$base:latest" -f "$dir/Dockerfile" "$dir"
+            docker push "$base:${{ env.IMAGE_TAG }}"
+            docker push "$base:${{ env.BRANCH_TAG }}"
+            docker push "$base:latest"
+          done
+
+  helm-package-push:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Lint and Package All Helm Charts
+        run: |
+          for chart in ${{ env.HELM_CHARTS_PATH }}/*; do
+            helm lint "$chart"
+            helm package "$chart"
+          done
+          mv *.tgz chart.tgz
+
+      - name: Login to GitHub Helm OCI Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
+
+      - name: Push All Helm Charts to GitHub Container Registry
+        run: |
+          for chart in *.tgz; do
+            helm push "$chart" oci://${{ env.REGISTRY }}
+          done

@@ -1,0 +1,39 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaRebalance
+metadata:
+  name: rebalance-example  # Name des Rebalance-Vorgangs
+  namespace: kafka          # Namespace, in dem Kafka läuft
+spec:
+  mode: full  # Rebalance-Modus:
+              # - "full"          = Gesamte Lastverteilung optimieren
+              # - "add-brokers"   = Neue Broker einbinden
+              # - "remove-brokers" = Broker entfernen
+
+  # (OPTIONAL) Falls Broker entfernt oder hinzugefügt werden sollen
+  brokers:  
+    - 3  # Beispiel: Broker mit der ID 3 aus dem Cluster entfernen
+
+  # (OPTIONAL) Bestimmte Balancing-Ziele definieren
+  goals:
+    - RackAwareGoal  # Stellt sicher, dass Partitionen über verschiedene Racks verteilt sind
+    - DiskUsageDistributionGoal  # Optimiert die Speicherplatzverteilung auf den Brokern
+    - NetworkInboundCapacityGoal  # Berücksichtigt Netzwerkauslastung bei der Verteilung
+
+  # (OPTIONAL) Rebalance-Vorschlag automatisch akzeptieren (Standard: false)
+  skipProposal: false  # Falls auf "true" gesetzt, wird der Vorschlag direkt ausgeführt
+
+  # (OPTIONAL) Rebalance-Strategie
+  # - `goals` gibt an, welche Faktoren berücksichtigt werden
+  # - `mode` bestimmt, ob nur neue Broker eingebunden oder entfernt werden sollen
+
+  # (OPTIONAL) Partitionen nur minimal bewegen (Vermeidung unnötiger Verschiebungen)
+  concurrentPartitionMovementsPerBroker: 5  # Anzahl der Partitionen, die pro Broker gleichzeitig verschoben werden dürfen
+
+  # (OPTIONAL) Replikatverschiebung einschränken
+  concurrentIntraBrokerPartitionMovements: 2  # Partitionen innerhalb eines Brokers verschieben
+  concurrentLeaderMovements: 10  # Maximale Anzahl von Leader-Partitionen, die verschoben werden dürfen
+
+  # (OPTIONAL) Netzwerk- und CPU-Limits für die Rebalance anpassen
+  replicaMovementStrategies:
+    - PrioritizeLargeReplicaMovementStrategy  # Bevorzugt große Partitionen zuerst
+    - PostponeUrpReplicaMovementStrategy  # Verschiebt zuerst Replikate mit unvollständiger Replikation

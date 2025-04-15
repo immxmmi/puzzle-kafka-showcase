@@ -1,0 +1,46 @@
+mosquitto:
+
+mqtt-producer:
+  replicaCount: 1
+  image:
+    repository: ttl.sh/puzzle-mqtt-producer
+    tag: "30d"
+    pullPolicy: Always
+  env:
+    MQTT_BROKER: "tcp://mosquitto.mosquitto.svc.cluster.local:1883"
+    MQTT_TOPIC: "weather/data"
+    FETCH_INTERVAL: 3
+
+mqtt-bridge:
+  image:
+    repository: eclipse-mosquitto
+    tag: "30d"
+    pullPolicy: Always
+
+  env:
+    MQTT_BROKER: "tcp://mosquitto.mosquitto.svc.cluster.local:1883"
+    MQTT_TOPIC: "weather/data"
+    KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+    KAFKA_TOPIC: "topic-weather-data"
+    KAFKA_BALANCER: "hash"
+
+kafka-web-consumer:
+  replicaCount: 1
+
+  service:
+    enabled: true
+    type: ClusterIP  
+    port: 8080
+    targetPort: 8080
+    nodePort: 30999  
+
+  image:
+    repository: ttl.sh/puzzle-kafka-web-consumer
+    tag: 30d
+    pullPolicy: Always
+
+  env:
+    KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+    KAFKA_TOPIC: "topic-weather-data"
+    KAFKA_CONSUMER_GROUP: "gui-consumer"
+    KAFKA_START_OFFSET: "first"

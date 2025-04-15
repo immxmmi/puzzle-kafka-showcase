@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka-ui
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://gitlab.puzzle.ch/pitc-cicd/apps/kafka-trainee.git"
+    path: "helm/kafka-ui"
+    targetRevision: main
+    helm:
+      valueFiles:
+        - "../../apps/kafka-ui/values.yaml"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kafka-ui
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

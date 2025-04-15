@@ -1,0 +1,90 @@
+mosquitto:
+  image:
+    repository: eclipse-mosquitto
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    main:
+      ports:
+        mqtt:
+          enabled: true
+          port: 1883
+
+  auth:
+    enabled: false
+    username: "puzzle"
+    passwordHash: "$6$gPbyBrL0$3MbJoq8qYw6nO1iYwHc1LwL5EmAEdOtcv4U7AvGbSAGUE2IQwNOlg0MmjhkmffPPLtXjV7YrXepvJox3zKmvNw=="
+
+  perListenerSettings: false
+  addListener: true
+
+  persistence:
+    data:
+      enabled: false
+    configinc:
+      enabled: false
+
+  additionalVolumes:
+    - name: auth-config
+      configMap:
+        name: "{{ .Release.Name }}-auth"
+
+  additionalVolumeMounts:
+    - name: auth-config
+      mountPath: /mosquitto/config/mosquitto.passwd
+      subPath: mosquitto.passwd
+      readOnly: true
+
+  probes:
+    liveness:
+      enabled: false
+    readiness:
+      enabled: false
+
+  extraConfig:
+    enabled: true
+    data: |
+      allow_anonymous true
+      log_dest stdout
+      listener 1883 0.0.0.0
+
+mqtt-producer:
+  replicaCount: 1
+
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 5001
+    targetPort: 5001
+
+  image:
+    repository: ttl.sh/puzzle-mqtt-producer
+    tag: "30d"
+    pullPolicy: IfNotPresent
+
+  env:
+    MQTT_BROKER: ""
+    MQTT_TOPIC: ""
+    FETCH_INTERVAL: 10
+
+kafka-web-consumer:
+  replicaCount: 1
+
+  service:
+    enabled: true
+    type: ClusterIP  
+    port: 8080
+    targetPort: 8080
+    nodePort: 30999  
+
+  image:
+    repository: ttl.sh/puzzle-kafka-web-consumer
+    tag: 30d
+    pullPolicy: IfNotPresent
+
+  env:
+    KAFKA_BROKER: ""
+    KAFKA_TOPIC: ""
+    KAFKA_CONSUMER_GROUP: ""
+    KAFKA_START_OFFSET: "first"

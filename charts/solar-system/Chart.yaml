@@ -1,0 +1,16 @@
+apiVersion: v2
+name: solar-system
+version: 0.1.0
+dependencies:
+  - name: mosquitto
+    version: 0.1.0
+    repository: file://../mosquitto
+  - name: mqtt-bridge
+    version: 0.1.0
+    repository: file://../mqtt-bridge
+  - name: mqtt-producer
+    version: 0.1.0
+    repository: file://../mqtt-producer
+  - name: kafka-web-consumer
+    version: 0.1.0
+    repository: file://../kafka-web-consumer

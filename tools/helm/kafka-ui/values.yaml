@@ -1,0 +1,13 @@
+ui:
+  enabled: true
+  image: provectuslabs/kafka-ui:latest
+  imagePullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30077
+  containerPort: 8080
+
+env:
+  KAFKA_CLUSTER_NAME: ""
+  KAFKA_BROKER: ""

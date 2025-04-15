@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-bridge-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: bridge
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MQTT_BROKER
+              value: {{ .Values.env.MQTT_BROKER }}
+            - name: MQTT_TOPIC
+              value: {{ .Values.env.MQTT_TOPIC }}
+            - name: KAFKA_BROKER
+              value: {{ .Values.env.KAFKA_BROKER }}
+            - name: KAFKA_TOPIC
+              value: {{ .Values.env.KAFKA_TOPIC }}
+            - name: KAFKA_BALANCER
+              value: {{ .Values.env.KAFKA_BALANCER }}

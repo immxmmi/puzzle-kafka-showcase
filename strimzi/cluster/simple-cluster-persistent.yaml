@@ -1,0 +1,189 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-mykafka-cluster-kafka-0
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /data/kafka-0
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-mykafka-cluster-kafka-0 
+  namespace: kafka
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: standard
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-mykafka-cluster-kafka-1
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /data/kafka-1
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-mykafka-cluster-kafka-1
+  namespace: kafka
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: standard
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-mykafka-cluster-zookeeper-0
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /data/zookeeper-0
+
+---
+apiVersion: v1 
+kind: PersistentVolumeClaim
+metadata:
+  name: data-mykafka-cluster-zookeeper-0 
+  namespace: kafka
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: standard
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-mykafka-cluster-zookeeper-1
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /data/zookeeper-1
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-mykafka-cluster-zookeeper-1
+  namespace: kafka
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: standard
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-mykafka-cluster-zookeeper-2
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /data/zookeeper-2
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-mykafka-cluster-zookeeper-2
+  namespace: kafka
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: standard
+---
+# Strimzi Kafka Cluster Definition
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: mykafka-cluster  # Name of the Kafka cluster
+  namespace: kafka  # Namespace where Kafka will be deployed
+spec:
+  cruiseControl:
+    config:
+      webserver.ssl.enable: false  # Disable SSL for Cruise Control web server
+      webserver.security.enable: false  # Disable authentication for Cruise Control web server
+      security.protocol: PLAINTEXT  # Plain text communication (no encryption)
+      ssl.client.auth: none  # No client authentication required
+
+  entityOperator:
+    topicOperator: {}  # Enable Topic Operator for automatic topic management
+
+  zookeeper:
+    replicas: 3  # High availability with three ZooKeeper instances
+    storage:
+      type: persistent-claim  # Persistent storage to retain data after restarts
+      size: 500Mi  # 500MB storage per ZooKeeper instance
+      class: standard  # Matches ZooKeeper PV storageClass
+
+  kafka:
+    replicas: 2  # Number of Kafka brokers
+    storage:
+      type: persistent-claim  # Persistent storage for Kafka logs and data
+      size: 500Mi  # 500MB storage per Kafka broker
+      class: standard  # Matches Kafka PV storageClass
+
+    listeners:
+      - name: internal  # Internal Kafka listener within the cluster
+        port: 9092  # Kafka broker port
+        tls: false  # Disable TLS encryption
+        type: internal  # Accessible within Kubernetes cluster only
+
+    config:
+      auto.create.topics.enable: false  # Prevent automatic topic creation (recommended for production)
+      default.replication.factor: 2  # Default replication factor for new topics
+      delete.topic.enable: false  # Disable topic deletion to prevent accidental data loss
+      min.insync.replicas: 1  # Allow a single replica to be considered in sync
+      offsets.topic.replication.factor: 1  # Required for clusters with less than 3 brokers to avoid coordinator errors
+      transaction.state.log.replication.factor: 1  # Ensures transaction logs can be created in small clusters
+      transaction.state.log.min.isr: 1  # Minimum in-sync replicas for transaction logs in small clusters

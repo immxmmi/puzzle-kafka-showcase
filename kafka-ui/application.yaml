@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka-ui
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://gitlab.puzzle.ch/mismail/kafka-showcase
+    path: "ui/kafka-ui/helm"
+    targetRevision: main
+    helm:
+      valueFiles:
+        - "../values.yaml"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kafka-ui
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

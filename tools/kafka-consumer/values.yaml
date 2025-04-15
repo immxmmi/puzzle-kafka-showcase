@@ -1,0 +1,14 @@
+replicaCount: 1
+
+service:
+  type: NodePort
+
+image:
+  tag: 100d
+  pullPolicy: Always
+
+env:
+  KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+  KAFKA_TOPIC: "topic-weather-data"
+  KAFKA_CONSUMER_GROUP: "gui-consumer"
+  KAFKA_START_OFFSET: "first" 

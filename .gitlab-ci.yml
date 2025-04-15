@@ -1,0 +1,17 @@
+stages:
+  - build
+
+docker_build_all_apps:
+  stage: build
+  tags:
+    - image_builder
+  variables:
+    IMAGE_TAG: "30d"
+    REGISTRY: ttl.sh
+  script:
+    - for dir in apps/*; do
+        name=$(basename "$dir");
+        docker build -t ${REGISTRY}/puzzle-$name:${IMAGE_TAG} -f "$dir/Dockerfile" "$dir";
+        docker push ${REGISTRY}/puzzle-$name:${IMAGE_TAG};
+      done
+  when: manual

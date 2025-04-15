@@ -1,0 +1,26 @@
+replicaCount: 1
+
+image:
+  repository: ttl.sh/puzzle-mqtt-bridge
+  tag: "30d"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+  targetPort: 5000
+
+env:
+  # The address of the MQTT broker, e.g., "mqtt://broker.hivemq.com"
+  MQTT_BROKER: "" 
+  # The MQTT topic to subscribe to and forward messages from
+  MQTT_TOPIC: "" 
+  # The address of the Kafka broker, e.g., "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+  KAFKA_BROKER: "" 
+  # The Kafka topic to which messages will be published
+  KAFKA_TOPIC: ""
+  # Kafka partition balancer mode:
+    # "RoundRobin" - Distributes messages evenly across partitions
+    # "LeastBytes" - Sends messages to the partition with the least load
+    # "Hash" - Assigns partitions based on a hash of the message key
+  KAFKA_BALANCER: "RoundRobin" 
