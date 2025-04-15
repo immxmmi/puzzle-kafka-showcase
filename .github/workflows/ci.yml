@@ -1,14 +1,7 @@
 name: CI/CD for Kafka Showcase
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-  pull_request:
-    branches:
-      - main
-      - dev
+  workflow_dispatch:
 
 permissions:
   packages: write
@@ -46,7 +39,6 @@ jobs:
           done
 
   helm-package-push:
-    needs: docker-build-push
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
