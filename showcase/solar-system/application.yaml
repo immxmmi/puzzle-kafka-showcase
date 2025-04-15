@@ -6,12 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://gitlab.puzzle.ch/mismail/kafka-showcase
-    targetRevision: main
-    path: showcase/solar-system/helm/solar-system
-    helm:
-      valueFiles:
-        - values.yaml
+    repoURL: ghcr.io/immxmmi/solar-system
+    targetRevision: 0.1.0
+    chart: solar-system
   destination:
     server: https://kubernetes.default.svc
     namespace: solar-system

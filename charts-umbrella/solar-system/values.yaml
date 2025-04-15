@@ -1,72 +1,28 @@
 mosquitto:
-  image:
-    repository: eclipse-mosquitto
-    tag: latest
-    pullPolicy: IfNotPresent
-
-  service:
-    main:
-      ports:
-        mqtt:
-          enabled: true
-          port: 1883
-
-  auth:
-    enabled: false
-    username: "puzzle"
-    passwordHash: "$6$gPbyBrL0$3MbJoq8qYw6nO1iYwHc1LwL5EmAEdOtcv4U7AvGbSAGUE2IQwNOlg0MmjhkmffPPLtXjV7YrXepvJox3zKmvNw=="
-
-  perListenerSettings: false
-  addListener: true
-
-  persistence:
-    data:
-      enabled: false
-    configinc:
-      enabled: false
-
-  additionalVolumes:
-    - name: auth-config
-      configMap:
-        name: "{{ .Release.Name }}-auth"
-
-  additionalVolumeMounts:
-    - name: auth-config
-      mountPath: /mosquitto/config/mosquitto.passwd
-      subPath: mosquitto.passwd
-      readOnly: true
-
-  probes:
-    liveness:
-      enabled: false
-    readiness:
-      enabled: false
-
-  extraConfig:
-    enabled: true
-    data: |
-      allow_anonymous true
-      log_dest stdout
-      listener 1883 0.0.0.0
 
 mqtt-producer:
   replicaCount: 1
-
-  service:
-    enabled: true
-    type: ClusterIP
-    port: 5001
-    targetPort: 5001
-
   image:
     repository: ttl.sh/puzzle-mqtt-producer
     tag: "30d"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
+  env:
+    MQTT_BROKER: "tcp://mosquitto.mosquitto.svc.cluster.local:1883"
+    MQTT_TOPIC: "weather/data"
+    FETCH_INTERVAL: 3
+
+mqtt-bridge:
+  image:
+    repository: eclipse-mosquitto
+    tag: "30d"
+    pullPolicy: Always
 
   env:
-    MQTT_BROKER: ""
-    MQTT_TOPIC: ""
-    FETCH_INTERVAL: 10
+    MQTT_BROKER: "tcp://mosquitto.mosquitto.svc.cluster.local:1883"
+    MQTT_TOPIC: "weather/data"
+    KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+    KAFKA_TOPIC: "topic-weather-data"
+    KAFKA_BALANCER: "hash"
 
 kafka-web-consumer:
   replicaCount: 1
@@ -81,10 +37,10 @@ kafka-web-consumer:
   image:
     repository: ttl.sh/puzzle-kafka-web-consumer
     tag: 30d
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   env:
-    KAFKA_BROKER: ""
-    KAFKA_TOPIC: ""
-    KAFKA_CONSUMER_GROUP: ""
+    KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+    KAFKA_TOPIC: "topic-weather-data"
+    KAFKA_CONSUMER_GROUP: "gui-consumer"
     KAFKA_START_OFFSET: "first"
