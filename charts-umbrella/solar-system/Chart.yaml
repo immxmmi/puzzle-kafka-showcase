@@ -3,7 +3,7 @@ name: solar-system
 version: 0.1.0
 dependencies:
   - name: mosquitto
-    version: 0.1.0
+    version: 4.8.2
     repository: oci://ghcr.io/immxmmi/mosquitto
   - name: mqtt-bridge
     version: 0.1.0
