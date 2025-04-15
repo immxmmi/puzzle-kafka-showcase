@@ -36,7 +36,7 @@ jobs:
 
       - name: Build & Push All App Images
         run: |
-          for dir in showcase/solar-system/${{ env.DOCKER_APPS_PATH }}/*; do
+          for dir in ${{ env.DOCKER_APPS_PATH }}/*; do
             name=$(basename "$dir")
             base=${{ env.REGISTRY }}/puzzle-${name}
             docker build -t "$base:${{ env.IMAGE_TAG }}" -t "$base:${{ env.BRANCH_TAG }}" -t "$base:latest" -f "$dir/Dockerfile" "$dir"
