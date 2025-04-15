@@ -1,6 +1,0 @@
-apiVersion: v2
-name: kafka-ui
-description: Helm Chart für Kafka UI
-type: application
-version: 0.2.0
-appVersion: "latest"

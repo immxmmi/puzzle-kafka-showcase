@@ -4,13 +4,13 @@ version: 0.1.0
 dependencies:
   - name: mosquitto
     version: 0.1.0
-    repository: file://../mosquitto
+    repository: oci://ghcr.io/immxmmi/mosquitto
   - name: mqtt-bridge
     version: 0.1.0
-    repository: file://../mqtt-bridge
+    repository: oci://ghcr.io/immxmmi/mqtt-bridge
   - name: mqtt-producer
     version: 0.1.0
-    repository: file://../mqtt-producer
+    repository: oci://ghcr.io/immxmmi/mqtt-producer
   - name: kafka-web-consumer
     version: 0.1.0
-    repository: file://../kafka-web-consumer
+    repository: oci://ghcr.io/immxmmi/kafka-web-consumer
