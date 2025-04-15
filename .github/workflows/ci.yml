@@ -54,7 +54,6 @@ jobs:
             helm lint "$chart"
             helm package "$chart"
           done
-          mv *.tgz chart.tgz
 
       - name: Login to GitHub Helm OCI Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
@@ -62,5 +61,6 @@ jobs:
       - name: Push All Helm Charts to GitHub Container Registry
         run: |
           for chart in *.tgz; do
-            helm push "$chart" oci://${{ env.REGISTRY }}
+            name=$(basename "$chart" .tgz)
+            helm push "$chart" oci://${{ env.REGISTRY }}/$name
           done
