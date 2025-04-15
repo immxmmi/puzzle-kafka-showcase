@@ -61,6 +61,6 @@ jobs:
       - name: Push All Helm Charts to GitHub Container Registry
         run: |
           for chart in *.tgz; do
-            name=$(tar -xOf "$chart" */Chart.yaml | grep '^name:' | awk '{print $2}')
+            name=$(tar -xOf "$chart" --wildcards '*/Chart.yaml' | grep '^name:' | awk '{print $2}')
             helm push "$chart" oci://${{ env.REGISTRY }}/$name
           done
