@@ -19,6 +19,7 @@ env:
   BRANCH_TAG: ${{ github.ref_name }}-latest
   DOCKER_APPS_PATH: apps
   HELM_CHARTS_PATH: charts
+  HELM_UMBRELLA_CHARTS_PATH: charts-umbrella
 
 jobs:
   docker-build-push:
@@ -65,6 +66,40 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
 
       - name: Push All Helm Charts to GitHub Container Registry
+        run: |
+          for chart in *.tgz; do
+            name=$(tar -xOf "$chart" --wildcards '*/Chart.yaml' | grep '^name:' | awk '{print $2}')
+            helm push "$chart" oci://${{ env.REGISTRY }}/$name
+          done
+
+  helm-umbrella-package-push:
+    needs: helm-package-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Update Dependencies
+        run: |
+          for chart in ${{ env.HELM_UMBRELLA_CHARTS_PATH }}/*; do
+            helm dependency update "$chart"
+          done
+
+      - name: Lint and Package Umbrella Charts
+        run: |
+          for chart in ${{ env.HELM_UMBRELLA_CHARTS_PATH }}/*; do
+            helm lint "$chart"
+            helm package "$chart"
+          done
+
+      - name: Login to GitHub Helm OCI Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
+
+      - name: Push Umbrella Charts to GitHub Container Registry
         run: |
           for chart in *.tgz; do
             name=$(tar -xOf "$chart" --wildcards '*/Chart.yaml' | grep '^name:' | awk '{print $2}')
