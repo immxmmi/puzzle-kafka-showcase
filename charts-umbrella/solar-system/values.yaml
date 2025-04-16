@@ -1,10 +1,9 @@
 mosquitto:
+  enabled: true
 
 mqtt-producer:
   replicaCount: 1
   image:
-    repository: ttl.sh/puzzle-mqtt-producer
-    tag: "30d"
     pullPolicy: Always
   env:
     MQTT_BROKER: "tcp://mosquitto.mosquitto.svc.cluster.local:1883"
@@ -14,7 +13,6 @@ mqtt-producer:
 mqtt-bridge:
   image:
     repository: eclipse-mosquitto
-    tag: "30d"
     pullPolicy: Always
 
   env:
@@ -35,8 +33,6 @@ kafka-web-consumer:
     nodePort: 30999  
 
   image:
-    repository: ttl.sh/puzzle-kafka-web-consumer
-    tag: 30d
     pullPolicy: Always
 
   env:

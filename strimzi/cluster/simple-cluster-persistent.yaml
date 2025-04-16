@@ -182,7 +182,7 @@ spec:
     config:
       auto.create.topics.enable: false  # Prevent automatic topic creation (recommended for production)
       default.replication.factor: 2  # Default replication factor for new topics
-      delete.topic.enable: false  # Disable topic deletion to prevent accidental data loss
+      delete.topic.enable: true  # Disable topic deletion to prevent accidental data loss
       min.insync.replicas: 1  # Allow a single replica to be considered in sync
       offsets.topic.replication.factor: 1  # Required for clusters with less than 3 brokers to avoid coordinator errors
       transaction.state.log.replication.factor: 1  # Ensures transaction logs can be created in small clusters

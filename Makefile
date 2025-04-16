@@ -76,39 +76,17 @@ help:
 	@echo "  remove_kafka_broker     ▶️  Remove a Kafka broker from the cluster"
 	@echo "═══════════════════════════════════════════════"
 
-# ─────────────────────────────────────────────────────────────
-# 🧰 Installation & Deinstallation – Strimzi, ArgoCD, UIs
-# ─────────────────────────────────────────────────────────────
+minikube_start:
+	@echo "🚀 Starting Minikube..."
+	@mminikube start --driver=docker --memory=5000 --cpus=3
 
-install_strimzi:
-	@helm repo add strimzi https://strimzi.io/charts/
-	@helm repo update
-	@helm install strimzi-operator strimzi/strimzi-kafka-operator --namespace $(KAFKA_NAMESPACE) --create-namespace
+minikube_stop:
+	@echo "🛑 Stopping Minikube..."
+	@mminikube stop
 
-uninstall_strimzi:
-	@echo "🧹 Uninstalling Strimzi Operator..."
-	@helm uninstall strimzi-operator --namespace $(KAFKA_NAMESPACE)
-	@kubectl delete crd kafkas.kafka.strimzi.io --ignore-not-found
-	@kubectl delete namespace $(KAFKA_NAMESPACE) --ignore-not-found
-	@echo "✅ Strimzi Operator has been uninstalled."
-
-install_kafka_ui:
-	@kubectl apply -f ui/kafka-ui/application.yaml
-	@echo -e "$(GREEN)✅ Kafka UI installed successfully!$(NC)"
-
-uninstall_kafka_ui:
-	@echo "🧹 Uninstalling Kafka UI..."
-	@kubectl delete -f ui/kafka-ui/application.yaml
-	@echo -e "$(GREEN)✅ Kafka UI has been uninstalled.$(NC)"
-
-# ─────────────────────────────────────────────────────────────
-# 🌐 UI Zugriff – Kafka UI, AKHQ
-# ─────────────────────────────────────────────────────────────
-
-start_kafka_ui:
-	@kubectl -n kafka-ui port-forward services/kafka-ui-service 8089:8080 > /dev/null 2>&1 &
-	@sleep 3
-	@echo "🌐 Kafka UI is available at http://localhost:8089/"
+minikube_delete:
+	@echo "🗑️  Deleting Minikube..."
+	@mminikube delete
 
 # ─────────────────────────────────────────────────────────────
 # 🧭 ArgoCD – Setup, Login & Projektanbindung
@@ -144,35 +122,39 @@ argocd_uninstall:
 	@kubectl delete namespace argocd --ignore-not-found
 	@echo -e "$(GREEN)✅ ArgoCD has been uninstalled."
 
-argocd_login:
-	@echo "🔐 Logging into Argo CD..."
-	@PASSWORD=$$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 --decode); \
-	argocd login $(MINIKUBE_IP):$(PORT) --username admin --password $$PASSWORD --insecure
-	@echo -e "$(GREEN)✅ Logged into Argo CD at http://$(MINIKUBE_IP):$(PORT)/$(NC)"
 
-argocd_add_project:
-	@echo "🔐 Adding private GitLab repository to ArgoCD..."
-	@argocd repo add https://gitlab.puzzle.ch/mismail/kafka-showcase.git \
-	  --username $(DEPLOY_USER) \
-	  --password $(DEPLOY_TOKEN)
-	@echo -e "$(GREEN)✅ Repository added to ArgoCD!"
+# ─────────────────────────────────────────────────────────────
+# 🧰 Installation & Deinstallation – Strimzi, ArgoCD, UIs
+# ─────────────────────────────────────────────────────────────
+
+strimzi_operator_install:
+	@echo "🚀 Installing Strimzi Operator via ArgoCD Application..."
+	@kubectl apply -f strimzi/application.yaml
+	@echo -e "$(GREEN)✅ Strimzi Operator Application has been applied via ArgoCD.$(NC)"
+
+strimzi_operator_uninstall:
+	@echo "🧹 Uninstalling Strimzi Operator Application from ArgoCD..."
+	@kubectl delete -f strimzi/application.yaml --ignore-not-found
+	@kubectl delete namespace $(KAFKA_NAMESPACE) --ignore-not-found
+	@echo -e "$(GREEN)✅ Strimzi Operator has been removed via ArgoCD.$(NC)"
+
 
 # ─────────────────────────────────────────────────────────────
 # ☁️ Kafka Cluster Management – Simple / Persistent / NodePool
 # ─────────────────────────────────────────────────────────────
 
-create_simple_cluster:
+kafka_create_simple_cluster:
 	@echo "Creating Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - ..."
 	@kubectl apply -f strimzi/cluster/simple-cluster.yaml --namespace $(KAFKA_NAMESPACE)
 	@$(MAKE) _wait_for_kafka_ready
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - is now Ready!"
 
-destroy_simple_cluster:
+kafka_destroy_simple_cluster:
 	@echo "Deleting Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - ..."
 	@kubectl delete -f strimzi/cluster/simple-cluster.yaml --namespace $(KAFKA_NAMESPACE)
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - is now deleted!"
 
-create_simple_cluster_persistent:
+kafka_create_simple_cluster_persistent:
 	@echo "Creating Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with Persistent Volume..."
 	@echo "Creating directories in Minikube for hostPath volumes..."
 	@minikube ssh -- "sudo mkdir -p /data/zookeeper-0 /data/zookeeper-1 /data/zookeeper-2 /data/kafka-0 /data/kafka-1; sudo chmod -R 777 /data; sudo chown -R 1000:1000 /data"
@@ -180,7 +162,7 @@ create_simple_cluster_persistent:
 	@$(MAKE) _wait_for_kafka_ready
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - is now Ready!"
  
-destroy_simple_cluster_persistent:
+kafka_destroy_simple_cluster_persistent:
 	@echo "Deleting Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with Persistent Volume..."
 	@kubectl delete -f strimzi/cluster/simple-cluster-persistent.yaml --namespace
 	@kubectl delete pvc -n kafka --all
@@ -201,38 +183,55 @@ _destroy_simple_cluster_with_nodepool:
 
 
 # ─────────────────────────────────────────────────────────────
-# 📦 ArgoCD Applications – Showcase Solar-System
+# 🌐 UI Zugriff – Kafka UI
 # ─────────────────────────────────────────────────────────────
 
-add_showcase_solar:
-	@echo "🚀 Adding ApplicationSet 'solar-system' to ArgoCD..."
+kafka_ui_install:
+	@kubectl apply -f ui/kafka-ui/application.yaml
+	@echo -e "$(GREEN)✅ Kafka UI installed successfully!$(NC)"
+
+kafka_ui_start:
+	@kubectl -n kafka-ui port-forward services/kafka-ui-service 8089:8080 > /dev/null 2>&1 &
+	@sleep 3
+	@echo "🌐 Kafka UI is available at http://localhost:8089/"
+
+
+kafka_ui_uninstall:
+	@echo "🧹 Uninstalling Kafka UI..."
+	@kubectl delete -f ui/kafka-ui/application.yaml
+	@echo -e "$(GREEN)✅ Kafka UI has been uninstalled.$(NC)"
+
+# ─────────────────────────────────────────────────────────────
+# 📦  Kafka Showcase
+# ─────────────────────────────────────────────────────────────
+
+kafka_cluster_add_showcase_solar_system:
+	@echo "🚀 Adding ApplicationSet 'solar-system' to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
-	@kubectl apply -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
-	@kubectl apply -f showcase/solar-system/applicationset.yaml
+#	@kubectl apply -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
+	@kubectl apply -f showcase/solar-system/application.yaml
 	@kubectl -n kafka port-forward svc/kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
 	@echo "🌐 Kafka Web Consumer is available at http://localhost:3099/"
 	@echo -e "$(GREEN)✅ ApplicationSet 'solar-system' added. ArgoCD will now sync your applications."
 
-remove_showcase_solar:
-	@echo "🧹 Removing ApplicationSet 'solar-system' from ArgoCD..."
+kafka_cluster_remove_showcase_solar_system:
+	@echo "🧹 Removing ApplicationSet 'solar-system' from Kafka Cluster..."
 	@kubectl delete -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
+	@kubectl delete -f showcase/solar-system/application.yaml
 	@echo -e "$(GREEN)✅  ApplicationSet 'solar-system' removed. Namespaces and apps may still exist depending on sync policy." a
 
-# ─────────────────────────────────────────────────────────────
-# 📦 ArgoCD Applications – Showcase Traffic Data
-# ─────────────────────────────────────────────────────────────
-
-add_showcase_traffic:
-	@echo "🚀 Adding Traffic Data to Kafka Cluster..."
+kafka_cluster_add_showcase_traffic_system:
+	@echo "🚀 Adding Traffic System to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
-	@kubectl apply -f strimzi/traffic-data/traffic-data -n $(KAFKA_NAMESPACE)
-	@kubectl apply -f showcase/traffic-data/application.yaml
-	@echo -e "$(GREEN)✅ Traffic Data added. ArgoCD will now sync your applications."
+	@kubectl apply -f strimzi/traffic-system/traffic-system -n $(KAFKA_NAMESPACE)
+	@kubectl apply -f showcase/traffic-system/application.yaml
+	@echo -e "$(GREEN)✅ Traffic System added. ArgoCD will now sync your applications."
 
-remove_showcase_traffic:
-	@echo "🧹 Removing Traffic Data from Kafka Cluster..."
-	@kubectl delete -f strimzi/traffic-generator/traffic-data -n $(KAFKA_NAMESPACE)
-	@echo -e "$(GREEN)✅ Traffic Data removed. Namespaces and apps may still exist depending on sync policy."
+kafka_cluster_remove_showcase_traffic_system:
+	@echo "🧹 Removing Traffic System from Kafka Cluster..."
+	@kubectl delete -f strimzi/topics/traffic-system -n $(KAFKA_NAMESPACE)
+	@kubectl delete -f showcase/traffic-system/application.yaml
+	@echo -e "$(GREEN)✅ Traffic System removed. Namespaces and apps may still exist depending on sync policy."
 # ─────────────────────────────────────────────────────────────
 # 📈 Cluster Status / Health
 # ─────────────────────────────────────────────────────────────
@@ -250,13 +249,13 @@ check_kafka_cluster_status:
 # 🧪 Kafka Management – Topics, Partitionen, Storage
 # ─────────────────────────────────────────────────────────────
 
-topics:
+kafka_cluster_topics:
 	@kubectl exec -n $(KAFKA_NAMESPACE) -it $(KAFKA_CLUSTER_NAME)-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
 
-describe:
+kafka_cluster_describe:
 	@kubectl exec -n $(KAFKA_NAMESPACE) -it $(KAFKA_CLUSTER_NAME)-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --describe --topic $(TOPIC) --bootstrap-server localhost:9092
 
-partitions:
+kafka_cluster_partitions:
 	@kubectl exec -n $(KAFKA_NAMESPACE) -it $(KAFKA_CLUSTER_NAME)-kafka-0 -- /opt/kafka/bin/kafka-log-dirs.sh --bootstrap-server localhost:9092 --describe
 
 # 📌 Kafka Rebalance
