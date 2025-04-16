@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - dev
   pull_request:
     branches:
       - main
+      - dev
   workflow_dispatch:
 
 permissions:
@@ -24,6 +26,7 @@ env:
 jobs:
   docker-build-push:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || contains(github.event.head_commit.message, 'apps/') }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -47,6 +50,7 @@ jobs:
 
   helm-package-push:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || contains(github.event.head_commit.message, 'charts/') }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -75,6 +79,7 @@ jobs:
   helm-umbrella-package-push:
     needs: helm-package-push
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || contains(github.event.head_commit.message, 'charts-umbrella/') }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
