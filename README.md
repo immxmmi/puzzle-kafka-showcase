@@ -146,4 +146,11 @@ If you don't want to use the Kafka UI, you can inspect the cluster manually:
    make kafka_cluster_partitions
    ```
 Enjoy your local event-driven architecture playground! 🛰️
-# puzzle-KafkaShowcase
+
+---
+
+## 🌍 Solar-System Showcase Example
+
+Below is a live visualization from the `solar-system` Kafka showcase, showing real-time weather data received and processed by the pipeline:
+
+![Live Kafka Weather Data Chart](img/solar-system-web..png)
