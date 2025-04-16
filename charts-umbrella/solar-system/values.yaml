@@ -4,16 +4,21 @@ mosquitto:
 mqtt-producer:
   replicaCount: 1
   image:
-    pullPolicy: Always
+    repository: ghcr.io/immxmmi/puzzle-mqtt-producer
+    tag: latest
+    pullPolicy: IfNotPresent
+
   env:
     MQTT_BROKER: "tcp://mosquitto.mosquitto.svc.cluster.local:1883"
     MQTT_TOPIC: "weather/data"
+    #WEATHER_API_URL: "https://api.open-meteo.com/v1/forecast?latitude=48.2082&longitude=16.3738&current_weather=true&hourly=temperature_2m,relative_humidity_2m,cloudcover,windgusts_10m,precipitation"
     FETCH_INTERVAL: 3
 
 mqtt-bridge:
   image:
-    repository: eclipse-mosquitto
-    pullPolicy: Always
+    repository: ghcr.io/immxmmi/puzzle-mqtt-bridge
+    tag: latest
+    pullPolicy: IfNotPresent
 
   env:
     MQTT_BROKER: "tcp://mosquitto.mosquitto.svc.cluster.local:1883"
@@ -23,17 +28,10 @@ mqtt-bridge:
     KAFKA_BALANCER: "hash"
 
 kafka-web-consumer:
-  replicaCount: 1
-
-  service:
-    enabled: true
-    type: ClusterIP  
-    port: 8080
-    targetPort: 8080
-    nodePort: 30999  
-
   image:
-    pullPolicy: Always
+  repository: ghcr.io/immxmmi/puzzle-kafka-web-consumer
+  tag: latest
+  pullPolicy: IfNotPresent
 
   env:
     KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
