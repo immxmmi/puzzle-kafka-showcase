@@ -50,7 +50,7 @@ You have several options:
 
 - *(Optional, for KRaft only)* Cluster with NodePool:
   ```bash
-  make create_simple_cluster_with_nodepool
+  make _create_simple_cluster_with_nodepool
   ```
 
 ### 3. Install & Start Kafka UI
@@ -72,7 +72,7 @@ make kafka_ui_start
 ### 4. Deploy the Solar-System Showcase
 
 ```bash
-make kafka_showcase_add_solar_system
+make kafka_showcaseadd_solar_system
 ```
 
 🕐 **Wait** until all components are fully synced (ArgoCD status: Healthy & Synced)
@@ -101,29 +101,29 @@ If you want to scale your Kafka brokers up or down dynamically:
 
 - To **add a broker**:
   ```bash
-  make add_kafka_broker
+  make kafka_cluster_add_broker
   ```
 
 - To **remove a broker**:
   ```bash
-  make remove_kafka_broker
+  make kafka_cluster_remove_broker
   ```
 
 These commands update the StatefulSet that defines your Kafka brokers, allowing Strimzi to rebalance automatically. You can also trigger:
 
- - `make auto-rebalance` – runs a rebalance automatically
- - `make upscale-rebalance` – rebalances after scaling up
+ - `make kafka_cluster_auto-rebalnce` – runs a rebalance automatically
+ - `make kafka_cluster_upscale-rebalance` – rebalances after scaling up
 
 Rebalancing is necessary to evenly distribute Kafka partitions across brokers after scaling events.
 
  - To **automatically rebalance**:
    ```bash
-   make auto-rebalance
+   make kafka_cluster_auto-rebalnce
    ```
 
  - To **rebalance after scaling up**:
    ```bash
-   make upscale-rebalance
+   make kafka_cluster_upscale-rebalance
    ```
 
  - (Optional) You can also manually approve rebalances or check their status using:
@@ -138,17 +138,17 @@ If you don't want to use the Kafka UI, you can inspect the cluster manually:
 
  - **List all topics**:
    ```bash
-   make topics
+   make kafka_cluster_topics
    ```
 
  - **Describe a topic** (requires setting the `TOPIC` variable):
    ```bash
-   make describe TOPIC=your-topic-name
+   make kafka_cluster_describe TOPIC=your-topic-name
    ```
 
  - **View partition information**:
    ```bash
-   make partitions
+   make kafka_cluster_partitions
    ```
 Enjoy your local event-driven architecture playground! 🛰️
 # puzzle-KafkaShowcase
