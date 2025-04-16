@@ -6,12 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://gitlab.puzzle.ch/mismail/kafka-showcase
-    path: "ui/kafka-ui/helm"
-    targetRevision: main
-    helm:
-      valueFiles:
-        - "../values.yaml"
+    repoURL: ghcr.io/immxmmi/kafka-ui
+    targetRevision: 0.1.0
+    chart: kafka-ui
   destination:
     server: https://kubernetes.default.svc
     namespace: kafka-ui

@@ -7,5 +7,5 @@ ui:
   containerPort: 8080
 
 env:
-  KAFKA_CLUSTER_NAME: ""
-  KAFKA_BROKER: ""
+  KAFKA_CLUSTER_NAME: mykafka-cluster
+  KAFKA_BROKER: mykafka-cluster-kafka-bootstrap.kafka:9092

@@ -1,3 +1,0 @@
-env:
-  KAFKA_CLUSTER_NAME: mykafka-cluster
-  KAFKA_BROKER: mykafka-cluster-kafka-bootstrap.kafka:9092

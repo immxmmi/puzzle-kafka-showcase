@@ -32,48 +32,50 @@ help:
 	@echo "═══════════════════════════════════════════════"
 	@echo ""
 	@echo "🔧 Required Setup:"
-	@echo "  install_strmzi     ▶️  Install Strimzi Operator"
-	@echo "  uninstall_strimzi     ▶️  Uninstall Strimzi Operator"
-	@echo "  install_argocd     ▶️  Deploy ArgoCD and configure repository"
-	@echo "  uninstall_argocd      ▶️  Uninstall ArgoCD"
-	@echo "  install_argocd_cli  ▶️  Install ArgoCD CLI via Homebrew (macOS only)"
-	@echo "  login_argocd        ▶️  Login to ArgoCD with default credentials"
-	@echo "  start_argocd       ▶️  Start ArgoCD and port-forward to localhost"
-	@echo "  add_argocd_project     ▶️  Register private GitLab repo in ArgoCD using deploy token"
+	@echo "  strimzi_operator_install        ▶️  Install Strimzi Operator"
+	@echo "  strimzi_operator_uninstall      ▶️  Uninstall Strimzi Operator"
+	@echo "  argocd_install                  ▶️  Install ArgoCD via Helm"
+	@echo "  argocd_uninstall                ▶️  Uninstall ArgoCD"
+	@echo "  argocd_start                    ▶️  Port-forward ArgoCD to localhost"
 	@echo ""
 	@echo "🧱 Cluster Management:"
-	@echo "  create_simple_cluster                  ▶️  Create a Simple Kafka Cluster"
-	@echo "  destroy_simple_cluster                 ▶️  Delete the Simple Kafka Cluster"
-	@echo "  create_simple_cluster_persistent       ▶️  Create Kafka Cluster with Persistent Volume"
-	@echo "  destroy_simple_cluster_persistent      ▶️  Delete Kafka Cluster with Persistent Volume"
-	@echo "  check_kafka_cluster_status               ▶️  Check Kafka Cluster status"
-	@echo "📦 ArgoCD Applications:"
-	@echo "  add_showcase_solar     ▶️  Add the 'solar-system' ApplicationSet to ArgoCD"
+	@echo "  kafka_create_simple_cluster              ▶️  Create a simple Kafka cluster"
+	@echo "  kafka_destroy_simple_cluster             ▶️  Delete the simple Kafka cluster"
+	@echo "  kafka_create_simple_cluster_persistent   ▶️  Create Kafka with persistent volumes"
+	@echo "  kafka_destroy_simple_cluster_persistent  ▶️  Delete Kafka with persistent volumes"
+	@echo "  check_kafka_cluster_status               ▶️  Check Kafka cluster status"
 	@echo ""
-	@echo "📊 Kafka UI Access:"
-	@echo "  install_kafka_ui     ▶️  Install Kafka UI"
-	@echo "  start_kafka_ui       ▶️  Start port-forwarding to Kafka UI"
-	@echo "  uninstall_kafka_ui    ▶️  Uninstall Kafka UI"
+	@echo "📦 Showcase Management:"
+	@echo "  kafka_showcase_add_solar_system           ▶️  Add 'solar-system' showcase"
+	@echo "  kafka_showcase_remove_solar_system       ▶️  Remove 'solar-system' showcase"
+	@echo "  kafka_showcase_add_traffic_system        ▶️  Add 'traffic-system' showcase"
+	@echo "  kafka_showcase_remove_traffic_system     ▶️  Remove 'traffic-system' showcase"
 	@echo ""
-	@echo "📊 AKHQ UI Access:"
-	@echo "  install_akhq_ui     ▶️  Install AKHQ UI"
-	@echo "  uninstall_akhq_ui    ▶️  Uninstall AKHQ UI"
+	@echo "🌐 UI Tools:"
+	@echo "  kafka_ui_install                         ▶️  Install Kafka UI"
+	@echo "  kafka_ui_start                           ▶️  Port-forward Kafka UI"
+	@echo "  kafka_ui_uninstall                       ▶️  Uninstall Kafka UI"
 	@echo ""
 	@echo "📚 Kafka Management:"
-	@echo "  topics                 ▶️  List all Kafka topics"
-	@echo "  describe               ▶️  Describe a specific Kafka topic (use: make describe TOPIC=my-topic)"
-	@echo "  partitions             ▶️  View partition information"
+	@echo "  kafka_cluster_topics                     ▶️  List Kafka topics"
+	@echo "  kafka_cluster_describe                   ▶️  Describe a Kafka topic (use TOPIC=...)"
+	@echo "  kafka_cluster_partitions                 ▶️  View partition info"
+	@echo ""
+	@echo "⚖️  Kafka Rebalancing:"
+	@echo "  kafka_cluster_auto-rebalnce                            ▶️  Trigger automatic rebalance"
+	@echo "  kafka_cluster_upscale-rebalance                        ▶️  Rebalance after adding broker"
+	@echo "  kafka_cluster_downscale-rebalance                      ▶️  Rebalance before removing broker"
+	@echo ""
+	@echo "📈 Scaling:"
+	@echo "  kafka_cluster_add_broker                         ▶️  Add Kafka broker"
+	@echo "  kafka_cluster_remove_broker                      ▶️  Remove Kafka broker"
+	@echo ""
+	@echo "💻 Minikube:"
+	@echo "  minikube_start                           ▶️  Start Minikube"
+	@echo "  minikube_stop                            ▶️  Stop Minikube"
+	@echo "  minikube_destroy                         ▶️  Delete Minikube"
 	@echo ""
 	@echo "📘 Run 'make <command>' to execute a specific task."
-	@echo ""
-	@echo "⚖️  Kafka Rebalance:"
-	@echo "  auto-rebalnce           ▶️  Trigger automatic Kafka rebalancing"
-	@echo "  upscale-rebalance       ▶️  Trigger rebalancing after adding a broker"
-	@echo "  downscale-rebalance     ▶️  Trigger rebalancing before removing a broker"
-	@echo ""
-	@echo "📈 Broker Scaling:"
-	@echo "  add_kafka_broker        ▶️  Add a Kafka broker to the cluster"
-	@echo "  remove_kafka_broker     ▶️  Remove a Kafka broker from the cluster"
 	@echo "═══════════════════════════════════════════════"
 
 minikube_start:
@@ -187,7 +189,7 @@ _destroy_simple_cluster_with_nodepool:
 # ─────────────────────────────────────────────────────────────
 
 kafka_ui_install:
-	@kubectl apply -f ui/kafka-ui/application.yaml
+	@kubectl apply -f kafka-ui/application.yaml
 	@echo -e "$(GREEN)✅ Kafka UI installed successfully!$(NC)"
 
 kafka_ui_start:
@@ -205,29 +207,29 @@ kafka_ui_uninstall:
 # 📦  Kafka Showcase
 # ─────────────────────────────────────────────────────────────
 
-kafka_cluster_add_showcase_solar_system:
+kafka_showcaseadd_solar_system:
 	@echo "🚀 Adding ApplicationSet 'solar-system' to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
-#	@kubectl apply -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
+	@kubectl apply -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/solar-system/application.yaml
-	@kubectl -n kafka port-forward svc/kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
+	@kubectl -n solar-system port-forward services/solar-system-kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
 	@echo "🌐 Kafka Web Consumer is available at http://localhost:3099/"
 	@echo -e "$(GREEN)✅ ApplicationSet 'solar-system' added. ArgoCD will now sync your applications."
 
-kafka_cluster_remove_showcase_solar_system:
+kafka_showcase_remove_solar_system:
 	@echo "🧹 Removing ApplicationSet 'solar-system' from Kafka Cluster..."
 	@kubectl delete -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
 	@kubectl delete -f showcase/solar-system/application.yaml
 	@echo -e "$(GREEN)✅  ApplicationSet 'solar-system' removed. Namespaces and apps may still exist depending on sync policy." a
 
-kafka_cluster_add_showcase_traffic_system:
+kafka_showcase_add_traffic_system:
 	@echo "🚀 Adding Traffic System to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
 	@kubectl apply -f strimzi/traffic-system/traffic-system -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/traffic-system/application.yaml
 	@echo -e "$(GREEN)✅ Traffic System added. ArgoCD will now sync your applications."
 
-kafka_cluster_remove_showcase_traffic_system:
+kafka_showcase_remove_traffic_system:
 	@echo "🧹 Removing Traffic System from Kafka Cluster..."
 	@kubectl delete -f strimzi/topics/traffic-system -n $(KAFKA_NAMESPACE)
 	@kubectl delete -f showcase/traffic-system/application.yaml
@@ -285,7 +287,7 @@ cleanup_rebalance:
 	@kubectl delete kafkarebalance $(REBALANCE_NAME) -n $(KAFKA_NAMESPACE) --ignore-not-found
 	@echo -e "$(GREEN)✅ KafkaRebalance '$(REBALANCE_NAME)' deleted."
 
-add_kafka_broker:
+kafka_cluster_add_broker:
 	@echo "═══════════════════════════════════════════════"
 	@echo "📈 Adding Kafka Broker to Cluster '$(KAFKA_CLUSTER_NAME)'..."
 	@CURRENT=$$(kubectl get kafka $(KAFKA_CLUSTER_NAME) -n $(KAFKA_NAMESPACE) -o jsonpath="{.spec.kafka.replicas}"); \
@@ -301,7 +303,7 @@ add_kafka_broker:
 	@echo "Please Manually Update strimzi/rebalance/upscale-rebalance.yaml with new broker ID: $$FINAL"
 	#@echo "═══════════════════════════════════════════════"
 
-remove_kafka_broker:
+kafka_cluster_remove_broker:
 	@echo "═══════════════════════════════════════════════"
 	@echo "📉 Removing a Kafka Broker from Cluster '$(KAFKA_CLUSTER_NAME)'..."
 	@CURRENT=$$(kubectl get kafka $(KAFKA_CLUSTER_NAME) -n $(KAFKA_NAMESPACE) -o jsonpath="{.spec.kafka.replicas}"); \
@@ -319,10 +321,10 @@ remove_kafka_broker:
 	@echo "Please Manually Update strimzi/rebalance/downscale-rebalance.yaml with new broker ID: $$FINAL"
 	@echo "═══════════════════════════════════════════════"
 
-auto-rebalnce:
+kafka_cluster_auto-rebalnce:
 	@kubectl apply -f strimzi/rebalance/auto-rebalance.yaml
 	@$(MAKE) wait_for_rebalance_status REBALANCE_NAME=auto-rebalance
 
-upscale-rebalance:
+kafka_cluster_upscale-rebalance:
 	@kubectl apply -f strimzi/rebalance/upscale-rebalance.yaml
 	@$(MAKE) wait_for_rebalance_status REBALANCE_NAME=upscale-rebalance
