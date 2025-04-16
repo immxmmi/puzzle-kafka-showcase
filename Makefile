@@ -78,16 +78,16 @@ help:
 
 minikube_start:
 	@echo "🚀 Starting Minikube..."
-	@mminikube start --driver=docker --memory=5000 --cpus=3
+	@minikube start --driver=docker --memory=5000 --cpus=3
 
 minikube_stop:
 	@echo "🛑 Stopping Minikube..."
-	@mminikube stop
+	@minikube stop
 
-minikube_delete:
-	@echo "🗑️  Deleting Minikube..."
-	@mminikube delete
-
+minikube_destroy:
+	@echo "🗑️  Destroying Minikube..."
+	@minikube delete
+	@echo -e "$(GREEN)✅ Minikube has been destroyed.$(NC)"
 # ─────────────────────────────────────────────────────────────
 # 🧭 ArgoCD – Setup, Login & Projektanbindung
 # ─────────────────────────────────────────────────────────────

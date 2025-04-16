@@ -5,8 +5,7 @@
 > - [kubectl](https://kubernetes.io/docs/tasks/tools/)  
 > - [make](https://www.gnu.org/software/make/)  
 > - [Docker](https://docs.docker.com/get-docker/)  
-> - [Helm](https://helm.sh/docs/intro/install/)  
-> - [ArgoCD CLI](https://argo-cd.readthedocs.io/en/stable/cli_installation/) *(optional, but recommended)*
+> - [Helm](https://helm.sh/docs/intro/install/)
 
 This project demonstrates how to set up a local Kafka cluster on **Minikube** using the **Strimzi Operator** and Helm, including a complete MQTT-to-Kafka data pipeline and an interactive showcase.
 

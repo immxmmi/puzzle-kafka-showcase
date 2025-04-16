@@ -9,7 +9,7 @@ mqtt-producer:
     pullPolicy: IfNotPresent
 
   env:
-    MQTT_BROKER: "tcp://mosquitto.mosquitto.svc.cluster.local:1883"
+    MQTT_BROKER: "tcp://solar-system-mosquitto:1883"
     MQTT_TOPIC: "weather/data"
     #WEATHER_API_URL: "https://api.open-meteo.com/v1/forecast?latitude=48.2082&longitude=16.3738&current_weather=true&hourly=temperature_2m,relative_humidity_2m,cloudcover,windgusts_10m,precipitation"
     FETCH_INTERVAL: 3
