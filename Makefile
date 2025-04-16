@@ -46,10 +46,11 @@ help:
 	@echo "  check_kafka_cluster_status               ▶️  Check Kafka cluster status"
 	@echo ""
 	@echo "📦 Showcase Management:"
-	@echo "  kafka_showcase_add_solar_system           ▶️  Add 'solar-system' showcase"
+	@echo "  kafka_showcaseadd_solar_system           ▶️  Add 'solar-system' showcase"
 	@echo "  kafka_showcase_remove_solar_system       ▶️  Remove 'solar-system' showcase"
 	@echo "  kafka_showcase_add_traffic_system        ▶️  Add 'traffic-system' showcase"
 	@echo "  kafka_showcase_remove_traffic_system     ▶️  Remove 'traffic-system' showcase"
+	@echo "  kafka_showcase_solar_system_gui          ▶️  Open solar-system web consumer"
 	@echo ""
 	@echo "🌐 UI Tools:"
 	@echo "  kafka_ui_install                         ▶️  Install Kafka UI"
@@ -62,13 +63,13 @@ help:
 	@echo "  kafka_cluster_partitions                 ▶️  View partition info"
 	@echo ""
 	@echo "⚖️  Kafka Rebalancing:"
-	@echo "  kafka_cluster_auto-rebalnce                            ▶️  Trigger automatic rebalance"
-	@echo "  kafka_cluster_upscale-rebalance                        ▶️  Rebalance after adding broker"
-	@echo "  kafka_cluster_downscale-rebalance                      ▶️  Rebalance before removing broker"
+	@echo "  kafka_cluster_auto-rebalnce              ▶️  Trigger automatic rebalance"
+	@echo "  kafka_cluster_upscale-rebalance          ▶️  Rebalance after adding broker"
+	@echo "  kafka_cluster_downscale-rebalance        ▶️  Rebalance before removing broker"
 	@echo ""
 	@echo "📈 Scaling:"
-	@echo "  kafka_cluster_add_broker                         ▶️  Add Kafka broker"
-	@echo "  kafka_cluster_remove_broker                      ▶️  Remove Kafka broker"
+	@echo "  kafka_cluster_add_broker                 ▶️  Add Kafka broker"
+	@echo "  kafka_cluster_remove_broker              ▶️  Remove Kafka broker"
 	@echo ""
 	@echo "💻 Minikube:"
 	@echo "  minikube_start                           ▶️  Start Minikube"
@@ -212,6 +213,8 @@ kafka_showcaseadd_solar_system:
 	@echo "Creating topics and deploying applications..."
 	@kubectl apply -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/solar-system/application.yaml
+
+kafka_showcase_solar_system_gui:
 	@kubectl -n solar-system port-forward services/solar-system-kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
 	@echo "🌐 Kafka Web Consumer is available at http://localhost:3099/"
 	@echo -e "$(GREEN)✅ ApplicationSet 'solar-system' added. ArgoCD will now sync your applications."
