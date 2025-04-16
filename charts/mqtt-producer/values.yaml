@@ -7,8 +7,8 @@ service:
   targetPort: 5001
 
 image:
-  repository: ttl.sh/puzzle-mqtt-producer
-  tag: "30d"
+  repository: ghcr.io/immxmmi/puzzle-mqtt-producer
+  tag: latest
   pullPolicy: IfNotPresent
 
 env:

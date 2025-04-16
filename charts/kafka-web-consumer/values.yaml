@@ -1,16 +1,16 @@
 replicaCount: 1
 
+image:
+  repository: ghcr.io/immxmmi/puzzle-kafka-web-consumer
+  tag: latest
+  pullPolicy: IfNotPresent
+
 service:
   enabled: true
   type: ClusterIP  
   port: 8080
   targetPort: 8080
   nodePort: 30999  
-
-image:
-  repository: ttl.sh/puzzle-kafka-web-consumer
-  tag: 30d
-  pullPolicy: IfNotPresent
 
 env:
   # The address of the Kafka broker, e.g., "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"

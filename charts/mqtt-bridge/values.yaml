@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: ttl.sh/puzzle-mqtt-bridge
-  tag: "30d"
+  repository: ghcr.io/immxmmi/puzzle-mqtt-bridge
+  tag: latest
   pullPolicy: IfNotPresent
 
 service:
