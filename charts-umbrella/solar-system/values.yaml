@@ -29,9 +29,9 @@ mqtt-bridge:
 
 kafka-web-consumer:
   image:
-  repository: ghcr.io/immxmmi/puzzle-kafka-web-consumer
-  tag: latest
-  pullPolicy: IfNotPresent
+    repository: ghcr.io/immxmmi/puzzle-kafka-web-consumer
+    tag: latest
+    pullPolicy: IfNotPresent
 
   env:
     KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"

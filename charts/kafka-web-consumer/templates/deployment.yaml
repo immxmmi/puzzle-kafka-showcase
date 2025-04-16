@@ -14,16 +14,20 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-kafka-web-consumer
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.image }}
+          image: "{{ .repository }}:{{ .tag }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          {{- with .Values.env }}
           env:
             - name: KAFKA_BROKER
-              value: "{{ .Values.env.KAFKA_BROKER }}"
+              value: "{{ .KAFKA_BROKER }}"
             - name: KAFKA_TOPIC
-              value: "{{ .Values.env.KAFKA_TOPIC }}"
+              value: "{{ .KAFKA_TOPIC }}"
             - name: KAFKA_CONSUMER_GROUP
-              value: "{{ .Values.env.KAFKA_CONSUMER_GROUP }}"
+              value: "{{ .KAFKA_CONSUMER_GROUP }}"
             - name: KAFKA_START_OFFSET
-              value: "{{ .Values.env.KAFKA_START_OFFSET }}"
+              value: "{{ .KAFKA_START_OFFSET }}"
+          {{- end }}
           ports:
             - containerPort: 8080
