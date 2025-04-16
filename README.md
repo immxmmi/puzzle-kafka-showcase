@@ -1,23 +1,18 @@
 # Kafka Showcase
 
-> 🛠️ **Tools Required**:  
-> - [Minikube](https://minikube.sigs.k8s.io/docs/start/)  
-> - [kubectl](https://kubernetes.io/docs/tasks/tools/)  
-> - [make](https://www.gnu.org/software/make/)  
-> - [Docker](https://docs.docker.com/get-docker/)  
-> - [Helm](https://helm.sh/docs/intro/install/)
-
 This project demonstrates how to set up a local Kafka cluster on **Minikube** using the **Strimzi Operator** and Helm, including a complete MQTT-to-Kafka data pipeline and an interactive showcase.
 
 ## 📌 Requirements
 
 To run this demo environment, you need:
 
-- A **Minikube** cluster with:
+- A [**Minikube**](https://minikube.sigs.k8s.io/docs/start/) cluster with:
   - Minimum **4–6 GB RAM** (more is better for scaling)
   - At least **3 CPUs**
-- `kubectl`
-- `make`
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- [make](https://www.gnu.org/software/make/)
+- [Docker](https://docs.docker.com/get-docker/)
+- [Helm](https://helm.sh/docs/intro/install/)
 - Internet access
 
 ## ✅ Step-by-Step Setup Guide
