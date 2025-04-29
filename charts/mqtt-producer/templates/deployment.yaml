@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mqtt-producer-deployment
+  labels:
+    app: {{ .Release.Name }}-mqtt-producer
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-mqtt-producer
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-mqtt-producer
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-mqtt-producer
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MQTT_BROKER
+              value: "{{ .Values.env.MQTT_BROKER }}"
+            - name: MQTT_TOPIC
+              value: "{{ .Values.env.MQTT_TOPIC }}"
+            - name: FETCH_INTERVAL
+              value: "{{ .Values.env.FETCH_INTERVAL }}"
+            - name: WEATHER_API_URL
+              value: "{{ .Values.env.WEATHER_API_URL }}"
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}

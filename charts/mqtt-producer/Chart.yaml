@@ -1,0 +1,6 @@
+apiVersion: v2
+name: mqtt-producer
+description: A Helm chart for deploying an MQTT data publisher
+type: application
+version: 0.1.1
+appVersion: "1.0"

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-kafka-web-consumer-deployment
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-kafka-web-consumer
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-kafka-web-consumer
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-kafka-web-consumer
+          {{- with .Values.image }}
+          image: "{{ .repository }}:{{ .tag }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          {{- with .Values.env }}
+          env:
+            - name: KAFKA_BROKER
+              value: "{{ .KAFKA_BROKER }}"
+            - name: KAFKA_TOPIC
+              value: "{{ .KAFKA_TOPIC }}"
+            - name: KAFKA_CONSUMER_GROUP
+              value: "{{ .KAFKA_CONSUMER_GROUP }}"
+            - name: KAFKA_START_OFFSET
+              value: "{{ .KAFKA_START_OFFSET }}"
+          {{- end }}
+          ports:
+            - containerPort: 8080
