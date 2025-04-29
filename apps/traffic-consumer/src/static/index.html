@@ -1,4 +1,4 @@
-<canvas id="trafficCanvas" width="1200" height="800"></canvas>
+<canvas id="trafficCanvas" width="1600" height="1000"></canvas>
 <script>
 const debugMode = false;
 const canvas = document.getElementById('trafficCanvas');
@@ -127,6 +127,23 @@ function drawRoad() {
   ctx.lineTo(canvas.width, canvas.height / 2);
   ctx.stroke();
   ctx.setLineDash([]);
+
+  // Gebäude korrekt auf Boden platzieren
+  for (let i = 0; i < canvas.width; i += 80) {
+    ctx.fillStyle = `hsl(${Math.random() * 360}, 30%, 30%)`;
+    const h = 60 + Math.random() * 60;
+    ctx.fillRect(i, 240 - h, 50, h);
+  }
+
+  // Bäume auf Naturstraße
+  for (let i = 0; i < canvas.width; i += 80) {
+    ctx.fillStyle = "#8B4513"; // Stamm
+    ctx.fillRect(i + 10, 670, 10, 30);
+    ctx.beginPath();
+    ctx.arc(i + 15, 665, 20, 0, 2 * Math.PI);
+    ctx.fillStyle = "green";
+    ctx.fill();
+  }
 }
 
 function drawTrafficLight() {
@@ -152,18 +169,20 @@ function drawWarning() {
 }
 
 function spawnCars() {
-  const numCars = Math.floor(trafficData.carsPerMinute / 60);
+  const numCars = Math.floor(trafficData.carsPerMinute / 40);
+  const lanes = [330, 360, 530, 560, 730, 760]; // zwei pro Straße
+
   for (let i = 0; i < numCars; i++) {
-    const y = 270 + Math.random() * 260;
+    const laneY = lanes[Math.floor(Math.random() * lanes.length)];
     const color = `hsl(${Math.random() * 360}, 70%, 55%)`;
-    const width = 40 + Math.random() * 20;
+    const width = 40 + Math.random() * 30;
     const height = 20;
-    const speed = (trafficData.averageSpeed / 100) + Math.random();
-    cars.push(new Car(-50, y, width, height, color, speed));
+    const speed = (trafficData.averageSpeed / 80) + Math.random();
+    cars.push(new Car(-50, laneY, width, height, color, speed));
   }
 
   if (trafficData.incidentReported) {
-    cars.push(new EmergencyCar(-50, 250, 50, 20));
+    cars.push(new EmergencyCar(-50, 530, 50, 20));
   }
 }
 
