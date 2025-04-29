@@ -18,7 +18,7 @@ kafka-web-consumer:
   image:
     repository: ghcr.io/immxmmi/puzzle-weather-kafka-web-consumer
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   env:
     KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
