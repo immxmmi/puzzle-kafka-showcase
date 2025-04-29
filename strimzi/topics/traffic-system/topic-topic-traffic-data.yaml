@@ -1,7 +1,7 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: traffic_replaced  # Name of the topic
+  name: topic-traffic-data  # Name of the topic
   labels:
     strimzi.io/cluster: mykafka-cluster  # Link to the Kafka cluster
 spec:

@@ -153,4 +153,10 @@ Enjoy your local event-driven architecture playground! 🛰️
 
 Below is a live visualization from the `weather-system` Kafka showcase, showing real-time weather data received and processed by the pipeline:
 
-![Live Kafka Weather Data Chart](img/weather-system-web..png)
+![Live Kafka Weather Data Chart](img/weather-system-web.png)
+
+## 🌍 Traffic-system Showcase Example
+
+Below is a live visualization from the `traffic-system` Kafka showcase, showing real-time traffic data received and processed by the pipeline:
+
+![Live Kafka Traffic Data Chart](img/traffic-system-web.png)

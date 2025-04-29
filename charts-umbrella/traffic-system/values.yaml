@@ -1,0 +1,38 @@
+mosquitto:
+  enabled: true
+
+mqtt-bridge:
+  image:
+    repository: ghcr.io/immxmmi/puzzle-mqtt-bridge
+    tag: latest
+    pullPolicy: IfNotPresent
+  env:
+    MQTT_BROKER: "tcp://traffic-system-mosquitto.traffic-system.svc.cluster.local:1883"
+    MQTT_TOPIC: "traffic/data"
+    KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+    KAFKA_TOPIC: "topic-traffic-data"
+    KAFKA_BALANCER: "hash"
+
+kafka-web-consumer:
+  image:
+  #  repository: ghcr.io/immxmmi/puzzle-traffic-kafka-web-consumer
+    repository: ghcr.io/immxmmi/puzzle-traffic-consumer
+    tag: latest
+    pullPolicy: Always
+
+  env:
+    KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+    KAFKA_TOPIC: "topic-traffic-data"
+    KAFKA_CONSUMER_GROUP: "gui-consumer"
+    KAFKA_START_OFFSET: "first"
+
+mqtt-producer:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/immxmmi/puzzle-traffic-mqtt-producer
+    tag: latest
+    pullPolicy: IfNotPresent
+  env:
+    MQTT_BROKER: "tcp://traffic-system-mosquitto.traffic-system.svc.cluster.local:1883"
+    MQTT_TOPIC: "traffic/data"
+    FETCH_INTERVAL: 3
