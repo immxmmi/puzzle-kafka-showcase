@@ -208,7 +208,7 @@ kafka_ui_uninstall:
 # 📦  Kafka Showcase
 # ─────────────────────────────────────────────────────────────
 
-kafka_showcaseadd_weather_system:
+kafka_showcase_add_weather_system:
 	@echo "🚀 Adding ApplicationSet 'weather-system' to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
 	@kubectl apply -f strimzi/topics/weather-system -n $(KAFKA_NAMESPACE)
@@ -226,7 +226,7 @@ kafka_showcase_remove_weather_system:
 	@echo -e "$(GREEN)✅  ApplicationSet 'weather-system' removed. Namespaces and apps may still exist depending on sync policy." a
 
 
-kafka_showcaseadd_solar_system:
+kafka_showcase_add_solar_system:
 	@echo "🚀 Adding ApplicationSet 'solar-system' to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
 	@kubectl apply -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
