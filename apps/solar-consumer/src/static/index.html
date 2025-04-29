@@ -1,0 +1,60 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const canvas = document.getElementById('solarCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  let solarInputPower = 0;
+  
+  async function fetchDataAndUpdate() {
+    const response = await fetch('/api/data');
+    const data = await response.json();
+    if (data.length > 0) {
+      solarInputPower = data[data.length - 1].solarInputPower || 0;
+    }
+  }
+  
+  function drawSparkles(centerX, centerY, count) {
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = Math.random() * 100 + 50;
+      const x = centerX + Math.cos(angle) * distance;
+      const y = centerY + Math.sin(angle) * distance;
+      ctx.beginPath();
+      ctx.arc(x, y, 2 + Math.random() * 3, 0, 2 * Math.PI);
+      ctx.fillStyle = 'rgba(255,255,0,0.8)';
+      ctx.fill();
+    }
+  }
+
+  function drawSun() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const baseRadius = 50;
+    const dynamicRadius = baseRadius + solarInputPower / 10;
+    const brightness = Math.min(1, solarInputPower / 1000);
+    
+    ctx.fillStyle = `rgba(135,206,250,${1 - brightness * 0.5})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    const gradient = ctx.createRadialGradient(centerX, centerY, dynamicRadius * 0.5, centerX, centerY, dynamicRadius);
+    gradient.addColorStop(0, `rgba(255, 223, 0, 1)`);
+    gradient.addColorStop(1, `rgba(255, 223, 0, ${1 - brightness * 0.7})`);
+    
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, dynamicRadius, 0, 2 * Math.PI);
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    if (solarInputPower > 800) {
+      drawSparkles(centerX, centerY, 20);
+    }
+    
+    requestAnimationFrame(drawSun);
+  }
+  
+  fetchDataAndUpdate();
+  setInterval(fetchDataAndUpdate, 5000);
+  requestAnimationFrame(drawSun);
+</script>
