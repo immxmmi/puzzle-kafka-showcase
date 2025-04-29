@@ -1,0 +1,14 @@
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-solar-mqtt-producer-service
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ .Release.Name }}-solar-mqtt-producer
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+{{- end }}

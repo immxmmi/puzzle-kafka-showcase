@@ -1,0 +1,39 @@
+mosquitto:
+  enabled: true
+
+solar-mqtt-producer:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/immxmmi/puzzle-solar-mqtt-producer
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  env:
+    MQTT_BROKER: "tcp://solar-system-mosquitto.solar-system.svc.cluster.local:1883"
+    MQTT_TOPIC: "solar/data"
+    FETCH_INTERVAL: 3
+
+mqtt-bridge:
+  image:
+    repository: ghcr.io/immxmmi/puzzle-mqtt-bridge
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  env:
+    MQTT_BROKER: "tcp://solar-system-mosquitto.solar-system.svc.cluster.local:1883"
+    MQTT_TOPIC: "solar/data"
+    KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+    KAFKA_TOPIC: "topic-solar-data"
+    KAFKA_BALANCER: "hash"
+
+solar-kafka-web-consumer:
+  image:
+    repository: ghcr.io/immxmmi/puzzle-solar-kafka-web-consumer
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  env:
+    KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+    KAFKA_TOPIC: "topic-solar-data"
+    KAFKA_CONSUMER_GROUP: "gui-consumer"
+    KAFKA_START_OFFSET: "first"

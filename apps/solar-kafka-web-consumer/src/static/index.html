@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Solar Live Dashboard</title>
+</head>
+<body>
+  <h1>☀️ Live Chart of Received Solar Data</h1>
+  <div id="charts">
+    <div style="height: 300px;"><canvas id="solarInputPowerChart"></canvas></div>
+    <div style="height: 300px;"><canvas id="outputHomePowerChart"></canvas></div>
+    <div style="height: 300px;"><canvas id="electricLevelChart"></canvas></div>
+    <div style="height: 300px;"><canvas id="outputPackPowerChart"></canvas></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    let charts = {};
+
+    async function fetchDataAndUpdate() {
+      const response = await fetch('/api/data');
+      const data = await response.json();
+      console.log("Received data:", data);
+
+      const timestamps = data.map(dp => {
+        const date = new Date(Number(dp.timestamp));
+        return date.toLocaleTimeString();
+      });
+
+      const datasets = {
+        solarInputPower: data.map(dp => Math.round(dp.solarInputPower * 10) / 10),
+        outputHomePower: data.map(dp => Math.round(dp.outputHomePower * 10) / 10),
+        electricLevel: data.map(dp => Math.round(dp.electricLevel * 10) / 10),
+        outputPackPower: data.map(dp => Math.round(dp.outputPackPower * 10) / 10)
+      };
+
+      const config = (label, values, color, yLabel) => ({
+        type: 'line',
+        data: {
+          labels: timestamps,
+          datasets: [{
+            label: label,
+            data: values,
+            borderColor: color,
+            backgroundColor: color + '33',
+            fill: true,
+            pointRadius: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 1000 },
+          scales: {
+            x: {
+              title: { display: true, text: 'Time (HH:MM:SS)' },
+              ticks: { maxRotation: 45, minRotation: 45 }
+            },
+            y: {
+              title: { display: true, text: yLabel }
+            }
+          }
+        }
+      });
+
+      if (!charts.solarInputPower) {
+        charts.solarInputPower = new Chart(document.getElementById('solarInputPowerChart'), config('Solar Input Power', datasets.solarInputPower, 'rgba(255,165,0,1)', 'Solar Input Power'));
+        charts.outputHomePower = new Chart(document.getElementById('outputHomePowerChart'), config('Output Home Power', datasets.outputHomePower, 'rgba(255,215,0,1)', 'Output Home Power'));
+        charts.electricLevel = new Chart(document.getElementById('electricLevelChart'), config('Electric Level', datasets.electricLevel, 'rgba(255,140,0,1)', 'Electric Level'));
+        charts.outputPackPower = new Chart(document.getElementById('outputPackPowerChart'), config('Output Pack Power', datasets.outputPackPower, 'rgba(255,99,71,1)', 'Output Pack Power'));
+      } else {
+        charts.solarInputPower.data.labels = timestamps;
+        charts.outputHomePower.data.labels = timestamps;
+        charts.electricLevel.data.labels = timestamps;
+        charts.outputPackPower.data.labels = timestamps;
+
+        charts.solarInputPower.data.datasets[0].data = datasets.solarInputPower;
+        charts.outputHomePower.data.datasets[0].data = datasets.outputHomePower;
+        charts.electricLevel.data.datasets[0].data = datasets.electricLevel;
+        charts.outputPackPower.data.datasets[0].data = datasets.outputPackPower;
+
+        charts.solarInputPower.update();
+        charts.outputHomePower.update();
+        charts.electricLevel.update();
+        charts.outputPackPower.update();
+      }
+    }
+
+    fetchDataAndUpdate();
+    setInterval(fetchDataAndUpdate, 5000);
+  </script>
+</body>
+</html>

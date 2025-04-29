@@ -1,0 +1,16 @@
+apiVersion: v2
+name: solar-system
+version: 0.1.0
+dependencies:
+  - name: mosquitto
+    version: 4.8.2
+    repository: oci://ghcr.io/immxmmi/mosquitto
+  - name: mqtt-bridge
+    version: 0.1.0
+    repository: oci://ghcr.io/immxmmi/mqtt-bridge
+  - name: solar-mqtt-producer
+    version: 0.1.0
+    repository: oci://ghcr.io/immxmmi/solar-mqtt-producer
+  - name: solar-kafka-web-consumer
+    version: 0.1.0
+    repository: oci://ghcr.io/immxmmi/solar-kafka-web-consumer
