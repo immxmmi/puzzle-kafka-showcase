@@ -15,7 +15,8 @@ mqtt-bridge:
 
 kafka-web-consumer:
   image:
-    repository: ghcr.io/immxmmi/puzzle-solar-kafka-web-consumer
+  #  repository: ghcr.io/immxmmi/puzzle-solar-kafka-web-consumer
+    repository: ghcr.io/immxmmi/puzzle-solar-consumer
     tag: latest
     pullPolicy: IfNotPresent
 
