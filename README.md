@@ -160,3 +160,9 @@ Below is a live visualization from the `weather-system` Kafka showcase, showing 
 Below is a live visualization from the `traffic-system` Kafka showcase, showing real-time traffic data received and processed by the pipeline:
 
 ![Live Kafka Traffic Data Chart](img/traffic-system-web.png)
+
+## 🌍 Solar-system Showcase Example
+
+Below is a live visualization from the `solar-system` Kafka showcase, showing real-time solar data received and processed by the pipeline:
+
+![Live Kafka Solar Data Chart](img/solar-system-web.png)

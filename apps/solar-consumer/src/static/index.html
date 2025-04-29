@@ -1,84 +1,146 @@
 <canvas id="solarCanvas" width="1200" height="800"></canvas>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const debugMode = false;
-  const canvas = document.getElementById('solarCanvas');
-  const ctx = canvas.getContext('2d');
-  
-  let solarInputPower = 0;
-  
-  async function fetchDataAndUpdate() {
-    if (debugMode) {
-      solarInputPower = Math.random() * 1000; // Simuliere zufällige Leistung
-      console.log("⚡ [Debug] Simulated Solar Input Power:", solarInputPower);
-      return;
-    }
-    const response = await fetch('/api/data');
-    const data = await response.json();
-    if (data.length > 0) {
-      solarInputPower = data[data.length - 1].solarInputPower || 0;
-      console.log("🔆 Solar Input Power:", solarInputPower);
+const debugMode = true;
+const canvas = document.getElementById('solarCanvas');
+const ctx = canvas.getContext('2d');
+
+let solarInputPower = 0;
+let birds = [];
+
+class Bird {
+  constructor(x, y, speed) {
+    this.x = x;
+    this.y = y;
+    this.speed = speed;
+  }
+  update() {
+    this.x += this.speed;
+    if (this.x > canvas.width + 50) {
+      this.x = -50;
+      this.y = 50 + Math.random() * 150;
     }
   }
-  
-  function drawSparkles(centerX, centerY, count) {
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * 2 * Math.PI;
-      const distance = Math.random() * 100 + 50;
-      const x = centerX + Math.cos(angle) * distance;
-      const y = centerY + Math.sin(angle) * distance;
-      ctx.beginPath();
-      ctx.arc(x, y, 2 + Math.random() * 3, 0, 2 * Math.PI);
-      ctx.fillStyle = 'rgba(255,255,0,0.8)';
-      ctx.fill();
-    }
-  }
-
-  function drawSun() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2.1;
-    const baseRadius = 150;
-    const dynamicRadius = baseRadius + solarInputPower / 5;
-    const brightness = Math.min(1, solarInputPower / 200);
-    
-    ctx.fillStyle = `rgba(173,216,230,${1 - brightness * 0.5})`;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    const gradient = ctx.createRadialGradient(centerX, centerY, dynamicRadius * 0.5, centerX, centerY, dynamicRadius);
-    gradient.addColorStop(0, `rgba(255, 223, 0, 1)`);
-    gradient.addColorStop(1, `rgba(255, 223, 0, ${1 - brightness * 0.7})`);
-    
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, dynamicRadius, 0, 2 * Math.PI);
-    ctx.fillStyle = gradient;
-    ctx.fill();
-
-    const rayLength = dynamicRadius + 20;
-    ctx.strokeStyle = `rgba(255, 223, 0, ${0.5 + brightness * 0.5})`;
+  draw() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
-    for (let i = 0; i < 20; i++) {
-      const angle = (i / 20) * 2 * Math.PI + (Date.now() * 0.001); // leicht drehend
-      const startX = centerX + Math.cos(angle) * dynamicRadius * 0.9;
-      const startY = centerY + Math.sin(angle) * dynamicRadius * 0.9;
-      const endX = centerX + Math.cos(angle) * rayLength;
-      const endY = centerY + Math.sin(angle) * rayLength;
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
-      ctx.stroke();
-    }
-
-    if (solarInputPower > 100) {
-      const sparkleCount = Math.floor(solarInputPower / 50);
-      drawSparkles(centerX, centerY, sparkleCount);
-    }
-    
-    requestAnimationFrame(drawSun);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(10, 5);
+    ctx.lineTo(20, 0);
+    ctx.stroke();
+    ctx.restore();
   }
+}
+
+async function fetchDataAndUpdate() {
+  if (debugMode) {
+    solarInputPower = Math.random() * 1000;
+    console.log("⚡ [Debug] Simulated Solar Input Power:", solarInputPower);
+    return;
+  }
+  const response = await fetch('/api/data');
+  const data = await response.json();
+  if (data.length > 0) {
+    solarInputPower = data[data.length - 1].solarInputPower || 0;
+    console.log("🔆 Solar Input Power:", solarInputPower);
+  }
+}
+
+function drawSparkles(centerX, centerY, count) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * 2 * Math.PI;
+    const distance = Math.random() * 100 + 50;
+    const x = centerX + Math.cos(angle) * distance;
+    const y = centerY + Math.sin(angle) * distance;
+    ctx.beginPath();
+    ctx.arc(x, y, 2 + Math.random() * 2, 0, 2 * Math.PI);
+    ctx.fillStyle = 'rgba(255,255,200,0.8)';
+    ctx.fill();
+  }
+}
+
+function drawAtmosphere(centerX, centerY, dynamicRadius) {
+  const waveCount = 3;
+  for (let i = 1; i <= waveCount; i++) {
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, dynamicRadius + i * 30 + Math.sin(Date.now() * 0.002 + i) * 5, 0, 2 * Math.PI);
+    ctx.strokeStyle = `rgba(255, 223, 0, ${0.05 * (waveCount - i + 1)})`;
+    ctx.lineWidth = 5;
+    ctx.stroke();
+  }
+}
+
+function drawSun() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2.1;
+  const baseRadius = 100;
+  const dynamicRadius = baseRadius + solarInputPower / 6;
+  const brightness = Math.min(1, solarInputPower / 800);
+
+  // Dynamischer Himmel
+  const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  skyGradient.addColorStop(0, `rgba(${100 + brightness * 155},${150 + brightness * 105},255,1)`);
+  skyGradient.addColorStop(1, `rgba(255, ${220 + brightness * 35}, ${100 + brightness * 50},1)`);
+  ctx.fillStyle = skyGradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Atmosphären-Schimmer
+  drawAtmosphere(centerX, centerY, dynamicRadius);
+
+  // Sonne
+  const sunGradient = ctx.createRadialGradient(centerX, centerY, dynamicRadius * 0.5, centerX, centerY, dynamicRadius);
+  sunGradient.addColorStop(0, `rgba(255, 223, 0, 1)`);
+  sunGradient.addColorStop(1, `rgba(255, 223, 0, 0)`);
   
-  fetchDataAndUpdate();
-  setInterval(fetchDataAndUpdate, 5000);
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, dynamicRadius, 0, 2 * Math.PI);
+  ctx.fillStyle = sunGradient;
+  ctx.fill();
+
+  // Strahlen
+  const rayLength = dynamicRadius + 30;
+  ctx.strokeStyle = `rgba(255, 223, 0, ${0.4 + brightness * 0.5})`;
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 30; i++) {
+    const angle = (i / 30) * 2 * Math.PI + (Date.now() * 0.001);
+    const startX = centerX + Math.cos(angle) * dynamicRadius * 0.8;
+    const startY = centerY + Math.sin(angle) * dynamicRadius * 0.8;
+    const endX = centerX + Math.cos(angle) * rayLength;
+    const endY = centerY + Math.sin(angle) * rayLength;
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
+  }
+
+  // Funken/Sparkles
+  if (solarInputPower > 100) {
+    const sparkleCount = Math.floor(solarInputPower / 80);
+    drawSparkles(centerX, centerY, sparkleCount);
+  }
+
+  // Vögel
+  birds.forEach(bird => {
+    bird.update();
+    bird.draw();
+  });
+
   requestAnimationFrame(drawSun);
+}
+
+function setupBirds() {
+  for (let i = 0; i < 5; i++) {
+    birds.push(new Bird(Math.random() * canvas.width, 50 + Math.random() * 150, 1 + Math.random()));
+  }
+}
+
+fetchDataAndUpdate();
+setInterval(fetchDataAndUpdate, 5000);
+setupBirds();
+requestAnimationFrame(drawSun);
 </script>
