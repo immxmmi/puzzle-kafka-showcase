@@ -1,6 +1,6 @@
 <canvas id="trafficCanvas" width="1600" height="1000"></canvas>
 <script>
-const debugMode = false;
+const debugMode = true;
 const canvas = document.getElementById('trafficCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -105,45 +105,47 @@ async function fetchDataAndUpdate() {
 }
 
 function drawRoad() {
-  ctx.fillStyle = "#444";
-  ctx.fillRect(0, canvas.height / 3, canvas.width, canvas.height / 3);
+  // Hintergrund
+  ctx.fillStyle = "#e0e0e0";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.strokeStyle = "#888";
-  ctx.lineWidth = 1.5;
-  for (let i = 1; i < 3; i++) {
-    const y = canvas.height / 3 + i * (canvas.height / 9);
-    ctx.setLineDash([15, 15]);
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
-    ctx.stroke();
-  }
-
-  ctx.setLineDash([20, 20]);
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, canvas.height / 2);
-  ctx.lineTo(canvas.width, canvas.height / 2);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Gebäude korrekt auf Boden platzieren
+  // Stadtstraße
+  ctx.fillStyle = "#3a3a3a";
+  ctx.fillRect(0, 280, canvas.width, 80);
   for (let i = 0; i < canvas.width; i += 80) {
-    ctx.fillStyle = `hsl(${Math.random() * 360}, 30%, 30%)`;
     const h = 60 + Math.random() * 60;
-    ctx.fillRect(i, 240 - h, 50, h);
+    ctx.fillStyle = `rgba(60,60,80,0.6)`;
+    ctx.fillRect(i, 280 - h, 50, h);
   }
+
+  // Naturstraße
+  ctx.fillStyle = "#4d4d4d";
+  ctx.fillRect(0, 480, canvas.width, 80);
+  ctx.fillStyle = "#7cfc00";
+  ctx.fillRect(0, 560, canvas.width, 20);
 
   // Bäume auf Naturstraße
-  for (let i = 0; i < canvas.width; i += 80) {
-    ctx.fillStyle = "#8B4513"; // Stamm
-    ctx.fillRect(i + 10, 670, 10, 30);
+  for (let i = 0; i < canvas.width; i += 100) {
+    ctx.fillStyle = "#8B4513";
+    ctx.fillRect(i + 15, 580, 10, 30);
     ctx.beginPath();
-    ctx.arc(i + 15, 665, 20, 0, 2 * Math.PI);
+    ctx.arc(i + 20, 575, 20, 0, 2 * Math.PI);
     ctx.fillStyle = "green";
     ctx.fill();
   }
+
+  // Autobahn
+  ctx.fillStyle = "#2f2f2f";
+  ctx.fillRect(0, 680, canvas.width, 80);
+
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([20, 20]);
+  ctx.beginPath();
+  ctx.moveTo(0, 720);
+  ctx.lineTo(canvas.width, 720);
+  ctx.stroke();
+  ctx.setLineDash([]);
 }
 
 function drawTrafficLight() {
@@ -169,20 +171,23 @@ function drawWarning() {
 }
 
 function spawnCars() {
-  const numCars = Math.floor(trafficData.carsPerMinute / 40);
-  const lanes = [330, 360, 530, 560, 730, 760]; // zwei pro Straße
+  const lanes = [305, 335, 505, 535, 705, 735];
+  const availableLanes = [...lanes];
+  const numCars = Math.min(Math.floor(trafficData.carsPerMinute / 40), availableLanes.length);
 
   for (let i = 0; i < numCars; i++) {
-    const laneY = lanes[Math.floor(Math.random() * lanes.length)];
+    const laneIndex = Math.floor(Math.random() * availableLanes.length);
+    const y = availableLanes.splice(laneIndex, 1)[0];
+
     const color = `hsl(${Math.random() * 360}, 70%, 55%)`;
-    const width = 40 + Math.random() * 30;
+    const width = 45 + Math.random() * 25;
     const height = 20;
     const speed = (trafficData.averageSpeed / 80) + Math.random();
-    cars.push(new Car(-50, laneY, width, height, color, speed));
+    cars.push(new Car(-50, y, width, height, color, speed));
   }
 
   if (trafficData.incidentReported) {
-    cars.push(new EmergencyCar(-50, 530, 50, 20));
+    cars.push(new EmergencyCar(-50, 535, 50, 20));
   }
 }
 
