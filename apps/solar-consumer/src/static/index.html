@@ -1,16 +1,23 @@
-<canvas id="solarCanvas" width="600" height="400"></canvas>
+<canvas id="solarCanvas" width="1200" height="800"></canvas>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+  const debugMode = false;
   const canvas = document.getElementById('solarCanvas');
   const ctx = canvas.getContext('2d');
   
   let solarInputPower = 0;
   
   async function fetchDataAndUpdate() {
+    if (debugMode) {
+      solarInputPower = Math.random() * 1000; // Simuliere zufällige Leistung
+      console.log("⚡ [Debug] Simulated Solar Input Power:", solarInputPower);
+      return;
+    }
     const response = await fetch('/api/data');
     const data = await response.json();
     if (data.length > 0) {
       solarInputPower = data[data.length - 1].solarInputPower || 0;
+      console.log("🔆 Solar Input Power:", solarInputPower);
     }
   }
   
@@ -31,12 +38,12 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const baseRadius = 50;
-    const dynamicRadius = baseRadius + solarInputPower / 10;
-    const brightness = Math.min(1, solarInputPower / 1000);
+    const centerY = canvas.height / 2.1;
+    const baseRadius = 150;
+    const dynamicRadius = baseRadius + solarInputPower / 5;
+    const brightness = Math.min(1, solarInputPower / 200);
     
-    ctx.fillStyle = `rgba(135,206,250,${1 - brightness * 0.5})`;
+    ctx.fillStyle = `rgba(173,216,230,${1 - brightness * 0.5})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     const gradient = ctx.createRadialGradient(centerX, centerY, dynamicRadius * 0.5, centerX, centerY, dynamicRadius);
@@ -48,8 +55,24 @@
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    if (solarInputPower > 800) {
-      drawSparkles(centerX, centerY, 20);
+    const rayLength = dynamicRadius + 20;
+    ctx.strokeStyle = `rgba(255, 223, 0, ${0.5 + brightness * 0.5})`;
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 20; i++) {
+      const angle = (i / 20) * 2 * Math.PI + (Date.now() * 0.001); // leicht drehend
+      const startX = centerX + Math.cos(angle) * dynamicRadius * 0.9;
+      const startY = centerY + Math.sin(angle) * dynamicRadius * 0.9;
+      const endX = centerX + Math.cos(angle) * rayLength;
+      const endY = centerY + Math.sin(angle) * rayLength;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+    }
+
+    if (solarInputPower > 100) {
+      const sparkleCount = Math.floor(solarInputPower / 50);
+      drawSparkles(centerX, centerY, sparkleCount);
     }
     
     requestAnimationFrame(drawSun);
