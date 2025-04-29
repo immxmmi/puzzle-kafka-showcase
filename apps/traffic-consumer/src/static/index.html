@@ -1,88 +1,133 @@
-<canvas id="trafficCanvas" width="1600" height="1000"></canvas>
+<canvas id="trafficCanvas" width="1400" height="600"></canvas>
 <script>
-const debugMode = true;
-const canvas = document.getElementById('trafficCanvas');
-const ctx = canvas.getContext('2d');
+const debugMode = false;
+const canvas = document.getElementById("trafficCanvas");
+const ctx = canvas.getContext("2d");
 
 let trafficData = {
-  carsPerMinute: 100,
-  averageSpeed: 50,
-  trafficDensity: 0.4,
+  carsPerMinute: 0,
+  averageSpeed: 0,
+  trafficDensity: 0,
   incidentReported: false,
 };
 
 let cars = [];
 
 class Car {
-  constructor(x, y, width, height, color, speed) {
+  constructor(x, y, color, speed) {
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
+    this.width = 40;
+    this.height = 20;
     this.color = color;
     this.speed = speed;
   }
   draw() {
-    ctx.save();
-    ctx.translate(this.x, this.y);
-
     ctx.fillStyle = this.color;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(this.width, 0);
-    ctx.lineTo(this.width - 5, this.height);
-    ctx.lineTo(5, this.height);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = "rgba(255,255,255,0.1)";
-    ctx.fillRect(5, 2, this.width - 10, 4);
-
-    ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-    ctx.fillRect(5, this.height, this.width - 10, 5);
-
-    ctx.restore();
+    ctx.fillRect(this.x, this.y, this.width, this.height);
   }
   update() {
     this.x += this.speed;
   }
 }
 
-class EmergencyCar extends Car {
-  constructor(x, y, width, height) {
-    super(x, y, width, height, 'red', 4.5);
-    this.lightOn = false;
-    setInterval(() => {
-      this.lightOn = !this.lightOn;
-    }, 400);
-  }
-  draw() {
-    super.draw();
-    ctx.save();
-    ctx.translate(this.x, this.y);
+function drawBackground() {
+  // Himmel
+  ctx.fillStyle = "#cce6ff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = this.lightOn ? "cyan" : "rgba(0,255,255,0.2)";
+  // Straße
+  ctx.fillStyle = "#444";
+  ctx.fillRect(0, 250, canvas.width, 100);
+
+  // Mittellinie
+  ctx.setLineDash([20, 20]);
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, 300);
+  ctx.lineTo(canvas.width, 300);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Bäume links/rechts
+  for (let i = 0; i < canvas.width; i += 80) {
+    // links
+    ctx.fillStyle = "#8B4513";
+    ctx.fillRect(i + 10, 220, 10, 30);
     ctx.beginPath();
-    ctx.arc(this.width / 2, -5, 5, 0, 2 * Math.PI);
+    ctx.arc(i + 15, 215, 20, 0, 2 * Math.PI);
+    ctx.fillStyle = "green";
     ctx.fill();
 
-    if (trafficData.trafficDensity > 0.8) {
-      ctx.fillStyle = "red";
-      ctx.font = "bold 16px sans-serif";
-      ctx.fillText("Hup! Hup!", this.width + 10, 0);
-    }
-
-    ctx.restore();
+    // rechts
+    ctx.fillStyle = "#8B4513";
+    ctx.fillRect(i + 10, 350, 10, 30);
+    ctx.beginPath();
+    ctx.arc(i + 15, 345, 20, 0, 2 * Math.PI);
+    ctx.fillStyle = "green";
+    ctx.fill();
   }
+}
+
+function drawTrafficLight() {
+  const isRed = trafficData.trafficDensity > 0.8 || trafficData.incidentReported;
+  ctx.beginPath();
+  ctx.arc(canvas.width - 40, 40, 15, 0, 2 * Math.PI);
+  ctx.fillStyle = isRed ? "red" : "green";
+  ctx.fill();
+  ctx.strokeStyle = "#222";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function drawWarning() {
+  if (trafficData.trafficDensity > 0.8 || trafficData.incidentReported) {
+    ctx.font = "bold 60px sans-serif";
+    ctx.fillStyle = "white";
+    ctx.fillText("STAU", canvas.width / 2 - 100, 90);
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 4;
+    ctx.strokeText("STAU", canvas.width / 2 - 100, 90);
+  }
+}
+
+function spawnCars() {
+  const y = 265 + Math.random() * 20;
+  const speed = (trafficData.averageSpeed / 60) + Math.random();
+  const color = `hsl(${Math.random() * 360}, 70%, 50%)`;
+  cars.push(new Car(-50, y, color, speed));
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawBackground();
+  drawTrafficLight();
+  drawWarning();
+
+  cars.forEach(car => {
+    car.update();
+    car.draw();
+  });
+
+  cars = cars.filter(car => car.x < canvas.width + 50);
+
+if (debugMode || (!debugMode && trafficData.carsPerMinute > 0)) {
+  if (Math.random() < 0.3) {
+    spawnCars();
+  }
+}
+
+  requestAnimationFrame(animate);
 }
 
 async function fetchDataAndUpdate() {
   if (debugMode) {
     trafficData = {
-      carsPerMinute: Math.floor(Math.random() * 300),
-      averageSpeed: Math.random() * 100 + 30,
+      carsPerMinute: 120,
+      averageSpeed: 50 + Math.random() * 30,
       trafficDensity: Math.random(),
-      incidentReported: Math.random() < 0.2,
+      incidentReported: Math.random() < 0.1,
     };
     return;
   }
@@ -98,117 +143,17 @@ async function fetchDataAndUpdate() {
         trafficDensity: latest.trafficDensity || 0,
         incidentReported: latest.incidentReported || false,
       };
+    } else {
+      trafficData = {
+        carsPerMinute: 0,
+        averageSpeed: 0,
+        trafficDensity: 0,
+        incidentReported: false,
+      };
     }
   } catch (e) {
     console.error("API fetch failed", e);
   }
-}
-
-function drawRoad() {
-  // Hintergrund
-  ctx.fillStyle = "#e0e0e0";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Stadtstraße
-  ctx.fillStyle = "#3a3a3a";
-  ctx.fillRect(0, 280, canvas.width, 80);
-  for (let i = 0; i < canvas.width; i += 80) {
-    const h = 60 + Math.random() * 60;
-    ctx.fillStyle = `rgba(60,60,80,0.6)`;
-    ctx.fillRect(i, 280 - h, 50, h);
-  }
-
-  // Naturstraße
-  ctx.fillStyle = "#4d4d4d";
-  ctx.fillRect(0, 480, canvas.width, 80);
-  ctx.fillStyle = "#7cfc00";
-  ctx.fillRect(0, 560, canvas.width, 20);
-
-  // Bäume auf Naturstraße
-  for (let i = 0; i < canvas.width; i += 100) {
-    ctx.fillStyle = "#8B4513";
-    ctx.fillRect(i + 15, 580, 10, 30);
-    ctx.beginPath();
-    ctx.arc(i + 20, 575, 20, 0, 2 * Math.PI);
-    ctx.fillStyle = "green";
-    ctx.fill();
-  }
-
-  // Autobahn
-  ctx.fillStyle = "#2f2f2f";
-  ctx.fillRect(0, 680, canvas.width, 80);
-
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([20, 20]);
-  ctx.beginPath();
-  ctx.moveTo(0, 720);
-  ctx.lineTo(canvas.width, 720);
-  ctx.stroke();
-  ctx.setLineDash([]);
-}
-
-function drawTrafficLight() {
-  const isRed = trafficData.trafficDensity > 0.8;
-  ctx.beginPath();
-  ctx.arc(canvas.width - 50, 60, 15, 0, 2 * Math.PI);
-  ctx.fillStyle = isRed ? "red" : "limegreen";
-  ctx.fill();
-  ctx.strokeStyle = "#222";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-}
-
-function drawWarning() {
-  if (trafficData.trafficDensity > 0.4 || trafficData.incidentReported) {
-    ctx.font = "bold 60px sans-serif";
-    ctx.fillStyle = "white";
-    ctx.fillText("STAU", canvas.width / 2 - 110, 82);
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 3;
-    ctx.strokeText("STAU", canvas.width / 2 - 110, 82);
-  }
-}
-
-function spawnCars() {
-  const lanes = [305, 335, 505, 535, 705, 735];
-  const availableLanes = [...lanes];
-  const numCars = Math.min(Math.floor(trafficData.carsPerMinute / 40), availableLanes.length);
-
-  for (let i = 0; i < numCars; i++) {
-    const laneIndex = Math.floor(Math.random() * availableLanes.length);
-    const y = availableLanes.splice(laneIndex, 1)[0];
-
-    const color = `hsl(${Math.random() * 360}, 70%, 55%)`;
-    const width = 45 + Math.random() * 25;
-    const height = 20;
-    const speed = (trafficData.averageSpeed / 80) + Math.random();
-    cars.push(new Car(-50, y, width, height, color, speed));
-  }
-
-  if (trafficData.incidentReported) {
-    cars.push(new EmergencyCar(-50, 535, 50, 20));
-  }
-}
-
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawRoad();
-  drawTrafficLight();
-  drawWarning();
-
-  cars.forEach(car => {
-    car.update();
-    car.draw();
-  });
-
-  cars = cars.filter(car => car.x < canvas.width + 100);
-
-  if (Math.random() < 0.4) {
-    spawnCars();
-  }
-
-  requestAnimationFrame(animate);
 }
 
 fetchDataAndUpdate();

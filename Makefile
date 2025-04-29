@@ -233,7 +233,7 @@ kafka_showcase_add_solar_system:
 	@kubectl apply -f showcase/solar-system/application.yaml
 
 kafka_showcase_solar_system_gui:
-	@kubectl -n solar-system port-forward services/solar-system-solar-kafka-web-consumer-service 3098:8080 > /dev/null 2>&1 &
+	@kubectl -n solar-system port-forward services/solar-system-kafka-web-consumer-service 3098:8080 > /dev/null 2>&1 &
 	@echo "🌐 Kafka Web Consumer is available at http://localhost:3098/"
 	@echo -e "$(GREEN)✅ ApplicationSet 'solar-system' added. ArgoCD will now sync your applications."
 
