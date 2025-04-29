@@ -12,11 +12,10 @@ import (
 )
 
 type TrafficData struct {
-	Timestamp         string  `json:"timestamp"`
-	CarsPerMinute     int     `json:"carsPerMinute"`
-	AverageSpeed      float64 `json:"averageSpeed"`
-	TrafficDensity    float64 `json:"trafficDensity"`
-	IncidentReported  bool    `json:"incidentReported"`
+	CarsPerMinute    int     `json:"carsPerMinute"`
+	AverageSpeed     float64 `json:"averageSpeed"`
+	TrafficDensity   float64 `json:"trafficDensity"`
+	IncidentReported bool    `json:"incidentReported"`
 }
 
 var (
@@ -67,23 +66,20 @@ func startKafkaConsumer() {
 			continue
 		}
 
-		// Erst outer Message lesen
+		// Outer message lesen
 		var raw map[string]interface{}
 		if err := json.Unmarshal(m.Value, &raw); err != nil {
 			log.Printf("⚠️ Failed to unmarshal outer message: %v", err)
 			continue
 		}
 
-		timestamp, _ := raw["timestamp"].(string)
 		messageStr, _ := raw["message"].(string)
 
-		// Jetzt echte TrafficData extrahieren
 		var msg TrafficData
 		if err := json.Unmarshal([]byte(messageStr), &msg); err != nil {
 			log.Printf("⚠️ Failed to unmarshal TrafficData: %v", err)
 			continue
 		}
-		msg.Timestamp = timestamp
 
 		dataMutex.Lock()
 		dataPoints = append(dataPoints, msg)
@@ -92,7 +88,7 @@ func startKafkaConsumer() {
 		}
 		dataMutex.Unlock()
 
-		log.Printf("🚗 Cars: %d/min | 🛣️ Speed: %.2f km/h | 🚦 Density: %.2f | 🚨 Incident: %v | ⏱️ %s",
-			msg.CarsPerMinute, msg.AverageSpeed, msg.TrafficDensity, msg.IncidentReported, msg.Timestamp)
+		log.Printf("🚗 Cars: %d/min | 🛣️ Speed: %.2f km/h | 🚦 Density: %.2f | 🚨 Incident: %v",
+			msg.CarsPerMinute, msg.AverageSpeed, msg.TrafficDensity, msg.IncidentReported)
 	}
 }
