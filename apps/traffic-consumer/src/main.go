@@ -12,34 +12,38 @@ import (
 )
 
 type TrafficData struct {
-	CarsPerMinute    int     `json:"carsPerMinute"`
-	AverageSpeed     float64 `json:"averageSpeed"`
-	TrafficDensity   float64 `json:"trafficDensity"`
-	IncidentReported bool    `json:"incidentReported"`
+	Timestamp         string  `json:"timestamp"`
+	CarsPerMinute     int     `json:"carsPerMinute"`
+	AverageSpeed      float64 `json:"averageSpeed"`
+	TrafficDensity    float64 `json:"trafficDensity"`
+	IncidentReported  bool    `json:"incidentReported"`
 }
 
 var (
 	dataPoints []TrafficData
 	dataMutex  sync.Mutex
-	maxData    = 100
+	maxData    = 20
 )
 
 func main() {
 	go startKafkaConsumer()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./static/index.html")
-	})
-
-	http.HandleFunc("/api/data", func(w http.ResponseWriter, r *http.Request) {
-		dataMutex.Lock()
-		defer dataMutex.Unlock()
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(dataPoints)
-	})
+	http.HandleFunc("/", serveIndex)
+	http.HandleFunc("/api/data", serveAPI)
 
 	log.Println("🌐 Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func serveIndex(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./static/index.html")
+}
+
+func serveAPI(w http.ResponseWriter, r *http.Request) {
+	dataMutex.Lock()
+	defer dataMutex.Unlock()
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(dataPoints)
 }
 
 func startKafkaConsumer() {
@@ -63,11 +67,23 @@ func startKafkaConsumer() {
 			continue
 		}
 
-		var msg TrafficData
-		if err := json.Unmarshal(m.Value, &msg); err != nil {
-			log.Printf("⚠️ Failed to unmarshal message: %v", err)
+		// Erst outer Message lesen
+		var raw map[string]interface{}
+		if err := json.Unmarshal(m.Value, &raw); err != nil {
+			log.Printf("⚠️ Failed to unmarshal outer message: %v", err)
 			continue
 		}
+
+		timestamp, _ := raw["timestamp"].(string)
+		messageStr, _ := raw["message"].(string)
+
+		// Jetzt echte TrafficData extrahieren
+		var msg TrafficData
+		if err := json.Unmarshal([]byte(messageStr), &msg); err != nil {
+			log.Printf("⚠️ Failed to unmarshal TrafficData: %v", err)
+			continue
+		}
+		msg.Timestamp = timestamp
 
 		dataMutex.Lock()
 		dataPoints = append(dataPoints, msg)
@@ -76,7 +92,7 @@ func startKafkaConsumer() {
 		}
 		dataMutex.Unlock()
 
-		log.Printf("🚗 Cars/Min: %d | Avg Speed: %.2f km/h | Density: %.2f | Incident: %v",
-			msg.CarsPerMinute, msg.AverageSpeed, msg.TrafficDensity, msg.IncidentReported)
+		log.Printf("🚗 Cars: %d/min | 🛣️ Speed: %.2f km/h | 🚦 Density: %.2f | 🚨 Incident: %v | ⏱️ %s",
+			msg.CarsPerMinute, msg.AverageSpeed, msg.TrafficDensity, msg.IncidentReported, msg.Timestamp)
 	}
 }
