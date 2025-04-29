@@ -1,19 +1,6 @@
 mosquitto:
   enabled: true
 
-weather-mqtt-producer:
-  replicaCount: 1
-  image:
-    repository: ghcr.io/immxmmi/puzzle-weather-mqtt-producer
-    tag: latest
-    pullPolicy: IfNotPresent
-
-  env:
-    MQTT_BROKER: "tcp://weather-system-mosquitto.weather-system.svc.cluster.local:1883"
-    MQTT_TOPIC: "weather/data"
-    #WEATHER_API_URL: "https://api.open-meteo.com/v1/forecast?latitude=48.2082&longitude=16.3738&current_weather=true&hourly=temperature_2m,relative_humidity_2m,cloudcover,windgusts_10m,precipitation"
-    FETCH_INTERVAL: 3
-
 mqtt-bridge:
   image:
     repository: ghcr.io/immxmmi/puzzle-mqtt-bridge
@@ -38,3 +25,16 @@ weather-kafka-web-consumer:
     KAFKA_TOPIC: "topic-weather-data"
     KAFKA_CONSUMER_GROUP: "gui-consumer"
     KAFKA_START_OFFSET: "first"
+
+weather-mqtt-producer:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/immxmmi/puzzle-weather-mqtt-producer
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  env:
+    MQTT_BROKER: "tcp://weather-system-mosquitto.weather-system.svc.cluster.local:1883"
+    MQTT_TOPIC: "weather/data"
+    #WEATHER_API_URL: "https://api.open-meteo.com/v1/forecast?latitude=48.2082&longitude=16.3738&current_weather=true&hourly=temperature_2m,relative_humidity_2m,cloudcover,windgusts_10m,precipitation"
+    FETCH_INTERVAL: 3

@@ -1,6 +1,0 @@
-apiVersion: v2
-name: solar-kafka-web-consumer
-description: A Helm chart for deploying a Kafka consumer that processes solar data
-type: application
-version: 0.1.0
-appVersion: "1.0"

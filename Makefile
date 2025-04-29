@@ -81,7 +81,7 @@ help:
 
 minikube_start:
 	@echo "🚀 Starting Minikube..."
-	@minikube start --driver=docker --memory=3500 --cpus=2 --force
+	@minikube start --driver=docker --memory=4000 --cpus=3 --force
 
 minikube_stop:
 	@echo "🛑 Stopping Minikube..."
@@ -233,15 +233,15 @@ kafka_showcase_add_solar_system:
 	@kubectl apply -f showcase/solar-system/application.yaml
 
 kafka_showcase_solar_system_gui:
-	@kubectl -n weather-system port-forward services/weather-system-weather-kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
-	@echo "🌐 Kafka Web Consumer is available at http://localhost:3099/"
-	@echo -e "$(GREEN)✅ ApplicationSet 'weather-system' added. ArgoCD will now sync your applications."
+	@kubectl -n solar-system port-forward services/solar-system-solar-kafka-web-consumer-service 3098:8080 > /dev/null 2>&1 &
+	@echo "🌐 Kafka Web Consumer is available at http://localhost:3098/"
+	@echo -e "$(GREEN)✅ ApplicationSet 'solar-system' added. ArgoCD will now sync your applications."
 
 kafka_showcase_remove_solar_system:
-	@echo "🧹 Removing ApplicationSet 'weather-system' from Kafka Cluster..."
-	@kubectl delete -f strimzi/topics/weather-system -n $(KAFKA_NAMESPACE)
-	@kubectl delete -f showcase/weather-system/application.yaml
-	@echo -e "$(GREEN)✅  ApplicationSet 'weather-system' removed. Namespaces and apps may still exist depending on sync policy." a
+	@echo "🧹 Removing ApplicationSet 'solar-system' from Kafka Cluster..."
+	@kubectl delete -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
+	@kubectl delete -f showcase/solar-system/application.yaml
+	@echo -e "$(GREEN)✅  ApplicationSet 'solar-system' removed. Namespaces and apps may still exist depending on sync policy." a
 
 
 

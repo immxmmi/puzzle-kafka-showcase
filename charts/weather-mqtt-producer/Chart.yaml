@@ -1,6 +1,0 @@
-apiVersion: v2
-name: weather-mqtt-producer
-description: A Helm chart for deploying an MQTT weather data publisher
-type: application
-version: 0.1.0
-appVersion: "1.0"

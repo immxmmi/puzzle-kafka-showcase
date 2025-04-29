@@ -9,8 +9,8 @@ dependencies:
     version: 0.1.0
     repository: oci://ghcr.io/immxmmi/mqtt-bridge
   - name: solar-mqtt-producer
-    version: 0.1.0
-    repository: oci://ghcr.io/immxmmi/solar-mqtt-producer
+    version: 0.1.1
+    repository: oci://ghcr.io/immxmmi/mqtt-producer
   - name: solar-kafka-web-consumer
-    version: 0.1.0
-    repository: oci://ghcr.io/immxmmi/solar-kafka-web-consumer
+    version: 0.1.1
+    repository: oci://ghcr.io/immxmmi/kafka-web-consumer
