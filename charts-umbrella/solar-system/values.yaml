@@ -13,7 +13,7 @@ mqtt-bridge:
     KAFKA_TOPIC: "topic-solar-data"
     KAFKA_BALANCER: "hash"
 
-solar-kafka-web-consumer:
+kafka-web-consumer:
   image:
     repository: ghcr.io/immxmmi/puzzle-solar-kafka-web-consumer
     tag: latest
@@ -25,7 +25,7 @@ solar-kafka-web-consumer:
     KAFKA_CONSUMER_GROUP: "gui-consumer"
     KAFKA_START_OFFSET: "first"
 
-solar-mqtt-producer:
+mqtt-producer:
   replicaCount: 1
   image:
     repository: ghcr.io/immxmmi/puzzle-solar-mqtt-producer

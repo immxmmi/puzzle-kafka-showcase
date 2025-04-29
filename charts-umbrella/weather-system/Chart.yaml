@@ -8,9 +8,9 @@ dependencies:
   - name: mqtt-bridge
     version: 0.1.0
     repository: oci://ghcr.io/immxmmi/mqtt-bridge
-  - name: weather-mqtt-producer
+  - name: mqtt-producer
     version: 0.1.1
     repository: oci://ghcr.io/immxmmi/mqtt-producer
-  - name: weather-kafka-web-consumer
+  - name: kafka-web-consumer
     version: 0.1.1
     repository: oci://ghcr.io/immxmmi/kafka-web-consumer
