@@ -208,11 +208,29 @@ kafka_ui_uninstall:
 # 📦  Kafka Showcase
 # ─────────────────────────────────────────────────────────────
 
-kafka_showcaseadd_solar_system:
+kafka_showcaseadd_weather_system:
 	@echo "🚀 Adding ApplicationSet 'weather-system' to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
 	@kubectl apply -f strimzi/topics/weather-system -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/weather-system/application.yaml
+
+kafka_showcase_weather_system_gui:
+	@kubectl -n weather-system port-forward services/weather-system-weather-kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
+	@echo "🌐 Kafka Web Consumer is available at http://localhost:3099/"
+	@echo -e "$(GREEN)✅ ApplicationSet 'weather-system' added. ArgoCD will now sync your applications."
+
+kafka_showcase_remove_weather_system:
+	@echo "🧹 Removing ApplicationSet 'weather-system' from Kafka Cluster..."
+	@kubectl delete -f strimzi/topics/weather-system -n $(KAFKA_NAMESPACE)
+	@kubectl delete -f showcase/weather-system/application.yaml
+	@echo -e "$(GREEN)✅  ApplicationSet 'weather-system' removed. Namespaces and apps may still exist depending on sync policy." a
+
+
+kafka_showcaseadd_solar_system:
+	@echo "🚀 Adding ApplicationSet 'solar-system' to Kafka Cluster..."
+	@echo "Creating topics and deploying applications..."
+	@kubectl apply -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
+	@kubectl apply -f showcase/solar-system/application.yaml
 
 kafka_showcase_solar_system_gui:
 	@kubectl -n weather-system port-forward services/weather-system-weather-kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
@@ -224,6 +242,9 @@ kafka_showcase_remove_solar_system:
 	@kubectl delete -f strimzi/topics/weather-system -n $(KAFKA_NAMESPACE)
 	@kubectl delete -f showcase/weather-system/application.yaml
 	@echo -e "$(GREEN)✅  ApplicationSet 'weather-system' removed. Namespaces and apps may still exist depending on sync policy." a
+
+
+
 
 kafka_showcase_add_traffic_system:
 	@echo "🚀 Adding Traffic System to Kafka Cluster..."
