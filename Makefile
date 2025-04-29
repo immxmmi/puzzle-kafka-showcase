@@ -243,9 +243,6 @@ kafka_showcase_remove_solar_system:
 	@kubectl delete -f showcase/solar-system/application.yaml
 	@echo -e "$(GREEN)✅  ApplicationSet 'solar-system' removed. Namespaces and apps may still exist depending on sync policy." a
 
-
-
-
 kafka_showcase_add_traffic_system:
 	@echo "🚀 Adding Traffic System to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
