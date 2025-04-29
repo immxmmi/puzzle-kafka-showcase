@@ -213,6 +213,7 @@ kafka_showcase_add_weather_system:
 	@echo "Creating topics and deploying applications..."
 	@kubectl apply -f strimzi/topics/weather-system -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/weather-system/application.yaml
+	@echo -e "$(GREEN)✅ Weather System added. ArgoCD will now sync your applications."
 
 kafka_showcase_weather_system_gui:
 	@kubectl -n weather-system port-forward services/weather-system-weather-kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
@@ -231,6 +232,7 @@ kafka_showcase_add_solar_system:
 	@echo "Creating topics and deploying applications..."
 	@kubectl apply -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/solar-system/application.yaml
+	@echo -e "$(GREEN)✅ Solar System added. ArgoCD will now sync your applications."
 
 kafka_showcase_solar_system_gui:
 	@kubectl -n solar-system port-forward services/solar-system-kafka-web-consumer-service 3098:8080 > /dev/null 2>&1 &
@@ -246,7 +248,7 @@ kafka_showcase_remove_solar_system:
 kafka_showcase_add_traffic_system:
 	@echo "🚀 Adding Traffic System to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
-	@kubectl apply -f strimzi/traffic-system/traffic-system -n $(KAFKA_NAMESPACE)
+	@kubectl apply -f strimzi/topics/traffic-system -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/traffic-system/application.yaml
 	@echo -e "$(GREEN)✅ Traffic System added. ArgoCD will now sync your applications."
 
@@ -255,6 +257,12 @@ kafka_showcase_remove_traffic_system:
 	@kubectl delete -f strimzi/topics/traffic-system -n $(KAFKA_NAMESPACE)
 	@kubectl delete -f showcase/traffic-system/application.yaml
 	@echo -e "$(GREEN)✅ Traffic System removed. Namespaces and apps may still exist depending on sync policy."
+
+kafka_showcase_traffic_system_gui:
+	@kubectl -n traffic-system port-forward services/traffic-system-kafka-web-consumer-service 3097:8080 > /dev/null 2>&1 &
+	@echo "🌐 Kafka Web Consumer is available at http://localhost:3097/"
+	@echo -e "$(GREEN)✅ ApplicationSet 'traffic-system' added. ArgoCD will now sync your applications."
+
 # ─────────────────────────────────────────────────────────────
 # 📈 Cluster Status / Health
 # ─────────────────────────────────────────────────────────────
