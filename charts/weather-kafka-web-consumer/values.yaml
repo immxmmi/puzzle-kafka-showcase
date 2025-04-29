@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/immxmmi/puzzle-kafka-web-consumer
+  repository: ghcr.io/immxmmi/puzzle-weather-kafka-web-consumer
   tag: latest
   pullPolicy: IfNotPresent
 

@@ -1,15 +1,15 @@
 mosquitto:
   enabled: true
 
-mqtt-producer:
+weather-mqtt-producer:
   replicaCount: 1
   image:
-    repository: ghcr.io/immxmmi/puzzle-mqtt-producer
+    repository: ghcr.io/immxmmi/puzzle-weather-mqtt-producer
     tag: latest
     pullPolicy: IfNotPresent
 
   env:
-    MQTT_BROKER: "tcp://solar-system-mosquitto.solar-system.svc.cluster.local:1883"
+    MQTT_BROKER: "tcp://weather-system-mosquitto.weather-system.svc.cluster.local:1883"
     MQTT_TOPIC: "weather/data"
     #WEATHER_API_URL: "https://api.open-meteo.com/v1/forecast?latitude=48.2082&longitude=16.3738&current_weather=true&hourly=temperature_2m,relative_humidity_2m,cloudcover,windgusts_10m,precipitation"
     FETCH_INTERVAL: 3
@@ -21,15 +21,15 @@ mqtt-bridge:
     pullPolicy: IfNotPresent
 
   env:
-    MQTT_BROKER: "tcp://solar-system-mosquitto.solar-system.svc.cluster.local:1883"
+    MQTT_BROKER: "tcp://weather-system-mosquitto.weather-system.svc.cluster.local:1883"
     MQTT_TOPIC: "weather/data"
     KAFKA_BROKER: "mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
     KAFKA_TOPIC: "topic-weather-data"
     KAFKA_BALANCER: "hash"
 
-kafka-web-consumer:
+weather-kafka-web-consumer:
   image:
-    repository: ghcr.io/immxmmi/puzzle-kafka-web-consumer
+    repository: ghcr.io/immxmmi/puzzle-weather-kafka-web-consumer
     tag: latest
     pullPolicy: IfNotPresent
 

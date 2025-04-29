@@ -1,5 +1,5 @@
 apiVersion: v2
-name: solar-system
+name: weather-system
 version: 0.1.0
 dependencies:
   - name: mosquitto
@@ -8,9 +8,9 @@ dependencies:
   - name: mqtt-bridge
     version: 0.1.0
     repository: oci://ghcr.io/immxmmi/mqtt-bridge
-  - name: mqtt-producer
+  - name: weather-mqtt-producer
     version: 0.1.0
-    repository: oci://ghcr.io/immxmmi/mqtt-producer
-  - name: kafka-web-consumer
+    repository: oci://ghcr.io/immxmmi/weather-mqtt-producer
+  - name: weather-kafka-web-consumer
     version: 0.1.0
-    repository: oci://ghcr.io/immxmmi/kafka-web-consumer
+    repository: oci://ghcr.io/immxmmi/weather-kafka-web-consumer

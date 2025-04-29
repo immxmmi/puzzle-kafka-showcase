@@ -64,7 +64,7 @@ make kafka_ui_start
 
 🌐 UI is available at: [http://localhost:8089](http://localhost:8089)
 
-### 4. Deploy the Solar-System Showcase
+### 4. Deploy the Weather-system Showcase
 
 ```bash
 make kafka_showcaseadd_solar_system
@@ -149,8 +149,8 @@ Enjoy your local event-driven architecture playground! 🛰️
 
 ---
 
-## 🌍 Solar-System Showcase Example
+## 🌍 Weather-system Showcase Example
 
-Below is a live visualization from the `solar-system` Kafka showcase, showing real-time weather data received and processed by the pipeline:
+Below is a live visualization from the `weather-system` Kafka showcase, showing real-time weather data received and processed by the pipeline:
 
-![Live Kafka Weather Data Chart](img/solar-system-web..png)
+![Live Kafka Weather Data Chart](img/weather-system-web..png)
