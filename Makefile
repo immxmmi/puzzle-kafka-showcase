@@ -216,7 +216,7 @@ kafka_showcase_add_weather_system:
 	@echo -e "$(GREEN)✅ Weather System added. ArgoCD will now sync your applications."
 
 kafka_showcase_weather_system_gui:
-	@kubectl -n weather-system port-forward services/weather-system-weather-kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
+	@kubectl -n weather-system port-forward services/weather-system-kafka-web-consumer-service 3099:8080 > /dev/null 2>&1 &
 	@echo "🌐 Kafka Web Consumer is available at http://localhost:3099/"
 	@echo -e "$(GREEN)✅ ApplicationSet 'weather-system' added. ArgoCD will now sync your applications."
 
