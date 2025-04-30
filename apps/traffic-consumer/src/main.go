@@ -66,12 +66,19 @@ func startKafkaConsumer() {
 			continue
 		}
 
-		var msg TrafficData
-		if err := json.Unmarshal(m.Value, &msg); err != nil {
-			log.Printf("⚠️ Failed to unmarshal TrafficData: %v", err)
+		var raw map[string]interface{}
+		if err := json.Unmarshal(m.Value, &raw); err != nil {
+			log.Printf("⚠️ Failed to unmarshal outer message: %v", err)
 			continue
 		}
 
+		messageStr, _ := raw["message"].(string)
+
+		var msg TrafficData
+		if err := json.Unmarshal([]byte(messageStr), &msg); err != nil {
+			log.Printf("⚠️ Failed to unmarshal TrafficData: %v", err)
+			continue
+		}
 		dataMutex.Lock()
 		dataPoints = append(dataPoints, msg)
 		if len(dataPoints) > maxData {
