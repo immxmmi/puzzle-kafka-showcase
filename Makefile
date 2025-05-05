@@ -148,26 +148,26 @@ strimzi_operator_uninstall:
 
 kafka_create_simple_cluster:
 	@echo "Creating Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - ..."
-	@kubectl apply -f strimzi/cluster/simple-cluster/ephemeral/application.yaml
+	@kubectl apply -f strimzi/cluster/simple-cluster/application-ephemeral.yaml
 	# @$(MAKE) _wait_for_kafka_ready
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - is now Ready!"
 
 kafka_destroy_simple_cluster:
 	@echo "Deleting Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - ..."
-	@kubectl delete -f strimzi/cluster/simple-cluster.yaml
+	@kubectl delete -f strimzi/cluster/simple-cluster/application-ephemeral.yaml
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - is now deleted!"
 
 kafka_create_simple_cluster_persistent:
 	@echo "Creating Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with Persistent Volume..."
 	@echo "Creating directories in Minikube for hostPath volumes..."
 	@minikube ssh -- "sudo mkdir -p /data/zookeeper-0 /data/zookeeper-1 /data/zookeeper-2 /data/kafka-0 /data/kafka-1; sudo chmod -R 777 /data; sudo chown -R 1000:1000 /data"
-	@kubectl apply -f strimzi/cluster/simple-cluster/ephemeral/application.yaml
+	@kubectl apply -f strimzi/cluster/simple-cluster/application-persistent.yaml
 	# @$(MAKE) _wait_for_kafka_ready
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - is now Ready!"
  
 kafka_destroy_simple_cluster_persistent:
 	@echo "Deleting Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with Persistent Volume..."
-	@kubectl delete -f sstrimzi/cluster/simple-cluster/persistent/application.yaml --namespace
+	@kubectl delete -f sstrimzi/cluster/simple-cluster/application-persistent.yaml
 	@kubectl delete pvc -n kafka --all
 	@echo "Removing directories in Minikube used for Persistent Volumes..."
 	@minikube ssh -- "sudo rm -rf /data/zookeeper-* /data/kafka-*"
@@ -175,13 +175,13 @@ kafka_destroy_simple_cluster_persistent:
 
 _create_simple_cluster_with_nodepool:
 	@echo "Creating Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with NodePool..."
-	@kubectl apply -f sstrimzi/cluster/simple-cluster-nodepool/ephemeral/application.yaml --namespace $(KAFKA_NAMESPACE)
+	@kubectl apply -f sstrimzi/cluster/simple-cluster-nodepool/application-ephemeral.yaml
 	@$(MAKE) _wait_for_kafka_ready
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with NodePool is now Ready!"
 
 _destroy_simple_cluster_with_nodepool:
 	@echo "Deleting Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with NodePool..."
-	@kubectl delete -f strimzi/cluster/simple-cluster-nodepool/ephemeral/application.yaml--namespace $(KAFKA_NAMESPACE)
+	@kubectl delete -f strimzi/cluster/simple-cluster-nodepool/application-persistent.yaml
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with NodePool is now deleted!"
 
 
