@@ -64,7 +64,41 @@ make kafka_ui_start
 
 🌐 UI is available at: [http://localhost:8089](http://localhost:8089)
 
-### 4. Deploy the Solar-system Showcase
+## 🌍 Weather-system Showcase
+
+### Deploy
+
+```bash
+make kafka_showcase_add_weather_system
+```
+
+🕐 **Wait** until all components are fully synced (ArgoCD status: Healthy & Synced)
+
+### Result
+
+Below is a live visualization from the `weather-system` Kafka showcase, showing real-time weather data received and processed by the pipeline:
+
+![Live Kafka Weather Data Chart](img/weather-system-web.png)
+
+## 🌍 Traffic-system Showcase
+
+### Deploy
+
+```bash
+make kafka_showcase_add_traffic_system
+```
+
+🕐 **Wait** until all components are fully synced (ArgoCD status: Healthy & Synced)
+
+### Result
+
+Below is a live visualization from the `traffic-system` Kafka showcase, showing real-time traffic data received and processed by the pipeline:
+
+![Live Kafka Traffic Data Chart](img/traffic-system-web.png)
+
+## 🌞 Solar-system Showcase
+
+### Deploy
 
 ```bash
 make kafka_showcase_solar_system_add
@@ -72,9 +106,11 @@ make kafka_showcase_solar_system_add
 
 🕐 **Wait** until all components are fully synced (ArgoCD status: Healthy & Synced)
 
-You can optionally open the Kafka Web Consumer directly:
+### Result
 
-🌐 [http://localhost:3099](http://localhost:3099)
+Below is a live visualization from the `solar-system` Kafka showcase, showing real-time solar data received and processed by the pipeline:
+
+![Live Kafka Solar Data Chart](img/solar-system-web.png)
 
 ---
 
@@ -106,19 +142,19 @@ If you want to scale your Kafka brokers up or down dynamically:
 
 These commands update the StatefulSet that defines your Kafka brokers, allowing Strimzi to rebalance automatically. You can also trigger:
 
- - `make kafka_cluster_auto-rebalnce` – runs a rebalance automatically
- - `make kafka_cluster_upscale-rebalance` – rebalances after scaling up
+ - `make kafka_cluster_auto_rebalance` – runs a rebalance automatically
+ - `make kafka_cluster_upscale_rebalance` – rebalances after scaling up
 
 Rebalancing is necessary to evenly distribute Kafka partitions across brokers after scaling events.
 
  - To **automatically rebalance**:
    ```bash
-   make kafka_cluster_auto-rebalnce
+   make kafka_cluster_auto_rebalance
    ```
 
  - To **rebalance after scaling up**:
    ```bash
-   make kafka_cluster_upscale-rebalance
+   make kafka_cluster_upscale_rebalance
    ```
 
  - (Optional) You can also manually approve rebalances or check their status using:
@@ -146,23 +182,3 @@ If you don't want to use the Kafka UI, you can inspect the cluster manually:
    make kafka_cluster_partitions
    ```
 Enjoy your local event-driven architecture playground! 🛰️
-
----
-
-## 🌍 Solar-system Showcase Example
-
-Below is a live visualization from the `solar-system` Kafka showcase, showing real-time solar data received and processed by the pipeline:
-
-![Live Kafka Solar Data Chart](img/solar-system-web.png)
-
-## 🌍 Traffic-system Showcase Example
-
-Below is a live visualization from the `traffic-system` Kafka showcase, showing real-time traffic data received and processed by the pipeline:
-
-![Live Kafka Traffic Data Chart](img/traffic-system-web.png)
-
-## 🌍 Solar-system Showcase Example
-
-Below is a live visualization from the `solar-system` Kafka showcase, showing real-time solar data received and processed by the pipeline:
-
-![Live Kafka Solar Data Chart](img/solar-system-web.png)
