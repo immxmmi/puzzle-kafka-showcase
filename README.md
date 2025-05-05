@@ -69,7 +69,11 @@ make kafka_ui_start
 ### Deploy
 
 ```bash
-make kafka_showcase_add_weather_system
+make kafka_showcase_weather_system_add
+```
+
+```bash
+make kafka_showcase_weather_system_port_forward_ui
 ```
 
 🕐 **Wait** until all components are fully synced (ArgoCD status: Healthy & Synced)
@@ -85,7 +89,11 @@ Below is a live visualization from the `weather-system` Kafka showcase, showing 
 ### Deploy
 
 ```bash
-make kafka_showcase_add_traffic_system
+make kafka_showcase_traffic_system_add
+```
+
+```bash
+make kafka_showcase_traffic_system_port_forward_ui
 ```
 
 🕐 **Wait** until all components are fully synced (ArgoCD status: Healthy & Synced)
@@ -102,6 +110,10 @@ Below is a live visualization from the `traffic-system` Kafka showcase, showing 
 
 ```bash
 make kafka_showcase_solar_system_add
+```
+
+```bash
+make kafka_showcase_solar_system_port_forward_ui
 ```
 
 🕐 **Wait** until all components are fully synced (ArgoCD status: Healthy & Synced)
@@ -125,60 +137,3 @@ mykafka-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092
 ```
 
 This works from inside the cluster or with port-forwarding from outside.
-
-## ⚖️ Advanced: Scaling & Rebalancing
-
-If you want to scale your Kafka brokers up or down dynamically:
-
-- To **add a broker**:
-  ```bash
-  make kafka_cluster_add_broker
-  ```
-
-- To **remove a broker**:
-  ```bash
-  make kafka_cluster_remove_broker
-  ```
-
-These commands update the StatefulSet that defines your Kafka brokers, allowing Strimzi to rebalance automatically. You can also trigger:
-
- - `make kafka_cluster_auto_rebalance` – runs a rebalance automatically
- - `make kafka_cluster_upscale_rebalance` – rebalances after scaling up
-
-Rebalancing is necessary to evenly distribute Kafka partitions across brokers after scaling events.
-
- - To **automatically rebalance**:
-   ```bash
-   make kafka_cluster_auto_rebalance
-   ```
-
- - To **rebalance after scaling up**:
-   ```bash
-   make kafka_cluster_upscale_rebalance
-   ```
-
- - (Optional) You can also manually approve rebalances or check their status using:
-   - `make wait_for_rebalance_status REBALANCE_NAME=name`
-   - `make approve_rebalance REBALANCE_NAME=name`
-
----
-
-## 📊 Kafka Topics & Partitions
-
-If you don't want to use the Kafka UI, you can inspect the cluster manually:
-
- - **List all topics**:
-   ```bash
-   make kafka_cluster_topics
-   ```
-
- - **Describe a topic** (requires setting the `TOPIC` variable):
-   ```bash
-   make kafka_cluster_describe TOPIC=your-topic-name
-   ```
-
- - **View partition information**:
-   ```bash
-   make kafka_cluster_partitions
-   ```
-Enjoy your local event-driven architecture playground! 🛰️
