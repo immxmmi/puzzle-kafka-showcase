@@ -248,13 +248,13 @@ kafka_showcase_solar_system_remove:
 kafka_showcase_traffic_system_add:
 	@echo "🚀 Adding Traffic System to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
-	@kubectl apply -f strimzi/topics/traffic-system/applicaion.yaml
+	@kubectl apply -f strimzi/topics/traffic-system/application.yaml
 	@kubectl apply -f showcase/traffic-system/application.yaml
 	@echo -e "$(GREEN)✅ Traffic System added. ArgoCD will now sync your applications."
 
 kafka_showcase_remove_traffic_system:
 	@echo "🧹 Removing Traffic System from Kafka Cluster..."
-	@kubectl delete -f strimzi/topics/traffic-system/applicaion.yaml
+	@kubectl delete -f strimzi/topics/traffic-system/application.yaml
 	@kubectl delete -f showcase/traffic-system/application.yaml
 	@echo -e "$(GREEN)✅ Traffic System removed. Namespaces and apps may still exist depending on sync policy."
 
