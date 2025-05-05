@@ -148,21 +148,21 @@ strimzi_operator_uninstall:
 
 kafka_create_simple_cluster:
 	@echo "Creating Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - ..."
-	@kubectl apply -f strimzi/cluster/simple-cluster/ephemeral/application.yaml --namespace $(KAFKA_NAMESPACE)
-	@$(MAKE) _wait_for_kafka_ready
+	@kubectl apply -f strimzi/cluster/simple-cluster/ephemeral/application.yaml
+	# @$(MAKE) _wait_for_kafka_ready
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - is now Ready!"
 
 kafka_destroy_simple_cluster:
 	@echo "Deleting Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - ..."
-	@kubectl delete -f strimzi/cluster/simple-cluster.yaml --namespace $(KAFKA_NAMESPACE)
+	@kubectl delete -f strimzi/cluster/simple-cluster.yaml
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - is now deleted!"
 
 kafka_create_simple_cluster_persistent:
 	@echo "Creating Simple Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with Persistent Volume..."
 	@echo "Creating directories in Minikube for hostPath volumes..."
 	@minikube ssh -- "sudo mkdir -p /data/zookeeper-0 /data/zookeeper-1 /data/zookeeper-2 /data/kafka-0 /data/kafka-1; sudo chmod -R 777 /data; sudo chown -R 1000:1000 /data"
-	@kubectl apply -f strimzi/cluster/simple-cluster/ephemeral/application.yaml --namespace $(KAFKA_NAMESPACE)
-	@$(MAKE) _wait_for_kafka_ready
+	@kubectl apply -f strimzi/cluster/simple-cluster/ephemeral/application.yaml
+	# @$(MAKE) _wait_for_kafka_ready
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - is now Ready!"
  
 kafka_destroy_simple_cluster_persistent:
