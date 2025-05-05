@@ -211,7 +211,7 @@ kafka_ui_uninstall:
 kafka_showcase_weather_system_add:
 	@echo "🚀 Adding ApplicationSet 'weather-system' to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
-	@kubectl apply -f strimzi/topics/weather-system -n $(KAFKA_NAMESPACE)
+	@kubectl apply -f strimzi/topics/weather-system/application.yaml -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/weather-system/application.yaml
 	@echo -e "$(GREEN)✅ Weather System added. ArgoCD will now sync your applications."
 
@@ -222,7 +222,7 @@ kafka_showcase_weather_system_start:
 
 kafka_showcase_weather_system_remove:
 	@echo "🧹 Removing ApplicationSet 'weather-system' from Kafka Cluster..."
-	@kubectl delete -f strimzi/topics/weather-system -n $(KAFKA_NAMESPACE)
+	@kubectl delete -f strimzi/topics/weather-system/application.yaml -n $(KAFKA_NAMESPACE)
 	@kubectl delete -f showcase/weather-system/application.yaml
 	@echo -e "$(GREEN)✅  ApplicationSet 'weather-system' removed. Namespaces and apps may still exist depending on sync policy." a
 
@@ -230,7 +230,7 @@ kafka_showcase_weather_system_remove:
 kafka_showcase_solar_system_add:
 	@echo "🚀 Adding ApplicationSet 'solar-system' to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
-	@kubectl apply -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
+	@kubectl apply -f strimzi/topics/solar-system/application.yaml -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/solar-system/application.yaml
 	@echo -e "$(GREEN)✅ Solar System added. ArgoCD will now sync your applications."
 
@@ -241,20 +241,20 @@ kafka_showcase_solar_system_start:
 
 kafka_showcase_solar_system_remove:
 	@echo "🧹 Removing ApplicationSet 'solar-system' from Kafka Cluster..."
-	@kubectl delete -f strimzi/topics/solar-system -n $(KAFKA_NAMESPACE)
+	@kubectl delete -f strimzi/topics/solar-system/applicaion.yaml -n $(KAFKA_NAMESPACE)
 	@kubectl delete -f showcase/solar-system/application.yaml
 	@echo -e "$(GREEN)✅  ApplicationSet 'solar-system' removed. Namespaces and apps may still exist depending on sync policy." a
 
 kafka_showcase_traffic_system_add:
 	@echo "🚀 Adding Traffic System to Kafka Cluster..."
 	@echo "Creating topics and deploying applications..."
-	@kubectl apply -f strimzi/topics/traffic-system -n $(KAFKA_NAMESPACE)
+	@kubectl apply -f strimzi/topics/traffic-system/application.yaml -n $(KAFKA_NAMESPACE)
 	@kubectl apply -f showcase/traffic-system/application.yaml
 	@echo -e "$(GREEN)✅ Traffic System added. ArgoCD will now sync your applications."
 
 kafka_showcase_remove_traffic_system:
 	@echo "🧹 Removing Traffic System from Kafka Cluster..."
-	@kubectl delete -f strimzi/topics/traffic-system -n $(KAFKA_NAMESPACE)
+	@kubectl delete -f strimzi/topics/traffic-system/application.yaml -n $(KAFKA_NAMESPACE)
 	@kubectl delete -f showcase/traffic-system/application.yaml
 	@echo -e "$(GREEN)✅ Traffic System removed. Namespaces and apps may still exist depending on sync policy."
 
