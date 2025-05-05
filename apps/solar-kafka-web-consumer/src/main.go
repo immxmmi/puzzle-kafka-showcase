@@ -53,7 +53,7 @@ func startKafkaConsumer() {
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers: []string{broker},
 		Topic:   topic,
-		GroupID: "web-consumer-group",
+		GroupID: "web-consumer-solar-group",
 	})
 	defer r.Close()
 
