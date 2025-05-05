@@ -181,7 +181,7 @@ _create_simple_cluster_with_nodepool:
 
 _destroy_simple_cluster_with_nodepool:
 	@echo "Deleting Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with NodePool..."
-	@kubectl delete -f strimzi/cluster/simple-cluster-nodepool/application-persistent.yaml
+	@kubectl delete -f strimzi/cluster/simple-cluster-nodepool/application-ephemeral.yaml
 	@echo "Kafka Cluster - $(KAFKA_CLUSTER_NAME) - with NodePool is now deleted!"
 
 
