@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/immxmmi/puzzle-kafka-showcase'
     targetRevision: HEAD
-    path: strimzi/cluster/simple-cluster/persistent/cluster.yaml
+    path: strimzi/cluster/simple-cluster/persistent
   destination:
     server: https://kubernetes.default.svc
     namespace: kafka
