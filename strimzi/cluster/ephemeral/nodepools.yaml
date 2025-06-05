@@ -1,0 +1,32 @@
+
+
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: kafka-pool
+  namespace: kafka
+spec:
+  clusterRef:
+    name: mykafka-cluster
+  replicas: 2
+  roles:
+    - broker
+    - controller
+  storage:
+    type: ephemeral
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: "500m"
+    limits:
+      memory: 2Gi
+      cpu: "1"
+  jvmOptions:
+    -Xms512m
+    -Xmx1536m
+  template:
+    pod:
+      metadata:
+        labels:
+          environment: dev
+          component: kafka
