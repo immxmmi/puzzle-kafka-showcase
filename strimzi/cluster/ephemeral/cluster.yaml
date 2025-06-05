@@ -24,9 +24,11 @@ spec:
         tls: false
   kafkaNodePools:
     - metadata:
-        name: kafka-pool
+        name: mykafka-pool
+        labels:
+          strimzi.io/cluster: mykafka-cluster
       spec:
-        replicas: 2
+        replicas: 3
         roles:
           - broker
           - controller
