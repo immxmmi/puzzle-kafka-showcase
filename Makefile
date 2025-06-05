@@ -111,6 +111,7 @@ argocd_port_forward_ui:
 # ─────────────────────────────────────────────────────────────
 
 strimzi_operator_install:
+	# kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
 	@echo "🚀 Installing Strimzi Operator via ArgoCD Application..."
 	@kubectl apply -f strimzi/application.yaml
 	@echo -e "$(GREEN)✅ Strimzi Operator Application has been applied via ArgoCD.$(NC)"
