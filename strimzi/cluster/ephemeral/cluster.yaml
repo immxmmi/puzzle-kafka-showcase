@@ -1,38 +1,35 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
-  name: mykafka-cluster  # Name of the Kafka cluster
-  namespace: kafka  # Namespace where Kafka will be deployed
+  name: mykafka-cluster
+  namespace: kafka
 spec:
-  cruiseControl:
-    config:
-      webserver.ssl.enable: false  # Disable SSL for the Cruise Control web server
-      webserver.security.enable: false  # Disable authentication for the Cruise Control web server
-      security.protocol: PLAINTEXT  # Use plain text communication (no encryption)
-      ssl.client.auth: none  # No client authentication required
-
-  entityOperator:
-    topicOperator: {}  # Enable the Topic Operator for automatic topic management
-
   kafka:
-    replicas: 2  # Number of Kafka broker instances
-    storage:
-      type: ephemeral  # Ephemeral storage (data will be lost on pod restart)
-
-    listeners:
-      - name: internal  # Internal listener for Kafka clients within the cluster
-        port: 9092  # Kafka broker port
-        tls: false  # Disable TLS encryption
-        type: internal  # Internal type means only accessible within the Kubernetes cluster
-
-    config:
-      auto.create.topics.enable: false  # Prevent automatic topic creation (recommended for production)
-      default.replication.factor: 2 # Default replication factor for new topics
-      delete.topic.enable: true  # Disable topic deletion to prevent accidental data loss
-      min.insync.replicas: 2  # Minimum number of replicas that must be in sync to acknowledge writes
-      offsets.topic.replication.factor: 1  # Required for clusters with less than 3 brokers to avoid coordinator errors
-      transaction.state.log.replication.factor: 1  # Ensures transaction logs can be created in small clusters
-      transaction.state.log.min.isr: 1  # Minimum in-sync replicas for transaction logs in small clusters
-
     kraft:
       enabled: true
+    replicas: 2
+    storage:
+      type: ephemeral
+    listeners:
+      - name: internal
+        port: 9092
+        tls: false
+        type: internal
+    config:
+      auto.create.topics.enable: false
+      default.replication.factor: 2
+      delete.topic.enable: true
+      min.insync.replicas: 2
+      offsets.topic.replication.factor: 1
+      transaction.state.log.replication.factor: 1
+      transaction.state.log.min.isr: 1
+
+  cruiseControl:
+    config:
+      webserver.ssl.enable: false
+      webserver.security.enable: false
+      security.protocol: PLAINTEXT
+      ssl.client.auth: none
+
+  entityOperator:
+    topicOperator: {}
