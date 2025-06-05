@@ -9,8 +9,6 @@ metadata:
 spec:
   kafka:
     version: 4.0.0
-    storage:
-      type: ephemeral
     config:
       auto.create.topics.enable: false
       delete.topic.enable: true
